@@ -11,7 +11,9 @@ import {
 import { Input, Avatar, Button } from "react-native-elements";
 import { Icon } from "react-native-elements/dist/icons/Icon";
 import tailwind from "tailwind-rn";
-import { auth, db } from "../lib/firebase";
+import { auth, db, storage, firebase } from "../lib/firebase";
+import * as ImagePicker from "expo-image-picker";
+import * as ImageManipulator from "expo-image-manipulator";
 
 interface SignupProps {}
 
@@ -36,6 +38,7 @@ const Signup: React.FC<SignupProps> = () => {
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [image, setImage] = useState<string | undefined>("");
 
   const isValid = () => {
     const _errors = errors;
@@ -78,7 +81,14 @@ const Signup: React.FC<SignupProps> = () => {
               email: email.trim(),
               phoneNumber: number.trim(),
             })
-            .then(() => setLoading(false))
+            .then(() => {
+              if (image && user.user) {
+                uploadImage(user.user, image).then((res) => console.log(res));
+                setLoading(false);
+              } else {
+                setLoading(false);
+              }
+            })
             .catch((error) => {
               setError(error.message);
               setLoading(false);
@@ -94,6 +104,53 @@ const Signup: React.FC<SignupProps> = () => {
     }
   };
 
+  const uploadImage = async (user: firebase.User, image: string) => {
+    const blob: Blob = await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = function () {
+        resolve(xhr.response);
+      };
+      xhr.onerror = function (e) {
+        console.log(e);
+        reject(new TypeError("Network request failed"));
+      };
+      xhr.responseType = "blob";
+      xhr.open("GET", image, true);
+      xhr.send(null);
+    });
+
+    const ref = storage.ref(
+      `users/${user.uid}/${image.substring(image.lastIndexOf("/") + 1)}`
+    );
+    const snapshot = await ref.put(blob);
+
+    return await snapshot.ref.getDownloadURL();
+  };
+
+  const pickImage = async () => {
+    await ImagePicker.requestCameraPermissionsAsync();
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.cancelled) {
+      const { uri } = await resizePhoto(result.uri, [244, 244]);
+      setImage(uri);
+    }
+  };
+
+  const resizePhoto = async (uri: string, size: [number, number]) => {
+    const actions = [{ resize: { width: size[0], height: size[1] } }];
+    const saveOptions = {
+      base64: true,
+      format: ImageManipulator.SaveFormat.JPEG,
+    };
+    return await ImageManipulator.manipulateAsync(uri, actions, saveOptions);
+  };
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.select({ ios: "padding" })}
@@ -107,9 +164,10 @@ const Signup: React.FC<SignupProps> = () => {
               size="xlarge"
               containerStyle={tailwind("bg-gray-300")}
               rounded
+              source={image ? { uri: image } : undefined}
               icon={{ type: "feather", name: "image" }}
             >
-              <Avatar.Accessory size={30} onPress={() => {}} />
+              <Avatar.Accessory size={30} onPress={pickImage} />
             </Avatar>
           </View>
 

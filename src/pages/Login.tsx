@@ -6,12 +6,14 @@ import {
   KeyboardAvoidingView,
   View,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 import { Input, Button } from "react-native-elements";
 import { auth } from "../lib/firebase";
 import { Image } from "react-native-elements/dist/image/Image";
 import { WIDTH } from "../constants";
 import { useNavigation } from "@react-navigation/core";
+import { Icon } from "react-native-elements/dist/icons/Icon";
 
 const Login: React.FC = () => {
   const navigation = useNavigation();
@@ -20,6 +22,7 @@ const Login: React.FC = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [visible, setVisible] = useState(false);
 
   const login = () => {
     setLoading(true);
@@ -35,7 +38,11 @@ const Login: React.FC = () => {
   };
 
   return (
-    <KeyboardAvoidingView style={tailwind("flex flex-1 justify-center")}>
+    <KeyboardAvoidingView
+      behavior={Platform.select({ ios: "padding" })}
+      keyboardVerticalOffset={Platform.select({ ios: 0, android: 500 })}
+      style={tailwind("flex flex-1 justify-center")}
+    >
       <View style={tailwind("w-full flex items-center justify-center")}>
         <Image
           source={require("../assets/logo.png")}
@@ -53,19 +60,34 @@ const Login: React.FC = () => {
         )}
 
         <Input
-          containerStyle={tailwind("mt-2")}
-          keyboardType="email-address"
           placeholder="Email Address"
+          inputStyle={tailwind("pl-2 text-sm")}
           onSubmitEditing={() => passRef.current?.focus()}
           onChangeText={setEmail}
+          value={email}
+          leftIcon={{ type: "feather", name: "mail", size: 18 }}
+          leftIconContainerStyle={tailwind("opacity-50")}
+          containerStyle={tailwind("mt-2")}
+          keyboardType="email-address"
         />
 
         <Input
-          ref={passRef}
           placeholder="Password"
-          onSubmitEditing={async () => await login()}
+          inputStyle={tailwind("pl-2 text-sm")}
           onChangeText={setPassword}
-          secureTextEntry
+          value={password}
+          leftIcon={{ type: "feather", name: "key", size: 18 }}
+          leftIconContainerStyle={tailwind("opacity-50")}
+          ref={passRef}
+          secureTextEntry={!visible}
+          rightIcon={
+            <Icon
+              onPress={() => setVisible(!visible)}
+              type="feather"
+              name={`${visible ? "eye-off" : "eye"}`}
+              size={18}
+            />
+          }
         />
 
         <Button
@@ -89,7 +111,7 @@ const Login: React.FC = () => {
           onPress={() => navigation.navigate("CarwashSignup")}
         >
           <Text style={tailwind("text-gray-500 underline")}>
-            Register your Carwash
+            Register your Shop
           </Text>
         </TouchableOpacity>
       </View>

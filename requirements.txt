@@ -1,0 +1,16 @@
+# CHART REPORTS
+no of appointment per day
+income per day
+type of service
+
+# APPOINTMENT FIELDS
+type of service - 
+    multi-stage paint correction, regular interior and exterior detailing
+    add ons such as paintless dent repair and glass detailing.
+
+type of car
+date of appointment
+time of appointment
+
+
+

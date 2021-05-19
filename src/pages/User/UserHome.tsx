@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import tailwind from "tailwind-rn";
-import { db } from "../lib/firebase";
+import { db } from "../../lib/firebase";
 
 interface HomeProps {}
 
@@ -60,10 +60,16 @@ const Home: React.FC<HomeProps> = () => {
 
   return (
     <ScrollView style={tailwind("flex flex-1")}>
+      <Button
+        onPress={() =>
+          Linking.openURL("https://waze.com/ul?ll=14.5311,121.0213&z=10")
+        }
+        title="APC on Waze"
+      />
       <Button title="TestRN" onPress={() => nav.navigate("TestRN")} />
-      {tags.map((tag, i) => (
+      {/* {tags.map((tag, i) => (
         <TagItem tag={tag} key={`${tag.rando ?? tag.tag}-${i}`} />
-      ))}
+      ))} */}
     </ScrollView>
   );
 };

@@ -3,17 +3,22 @@ import "firebase/auth";
 import "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAtX3ohU85WeRy7CdHQtzlfd3SmcVN7cPY",
-  authDomain: "hiwam0.firebaseapp.com",
-  projectId: "hiwam0",
-  storageBucket: "hiwam0.appspot.com",
-  messagingSenderId: "967371380426",
-  appId: "1:967371380426:web:2ded9a099468d85b30c633",
+  apiKey: "AIzaSyDJx6mEac3aWqb1w4i5NoTwsVN9AbM8xLs",
+  authDomain: "quickie-washie.firebaseapp.com",
+  projectId: "quickie-washie",
+  storageBucket: "quickie-washie.appspot.com",
+  messagingSenderId: "888863628081",
+  appId: "1:888863628081:web:8ad4c80afab400044eae10",
+  measurementId: "G-ZT58RD29DF",
 };
 
-firebase.initializeApp(firebaseConfig);
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+} else {
+  firebase.app();
+}
 
 const db = firebase.firestore();
 const auth = firebase.auth();
 
-export { db, auth };
+export { db, auth, firebase };

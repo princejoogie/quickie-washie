@@ -21,9 +21,11 @@ export const DatabaseProvider: React.FC = ({ children }) => {
     useState<firebase.firestore.DocumentData | undefined>(undefined);
 
   useEffect(() => {
+    let dataSubscriber: () => void;
     const authSubscriber = auth.onAuthStateChanged((user) => {
       if (user) {
-        db.collection("users")
+        dataSubscriber = db
+          .collection("users")
           .doc(user.uid)
           .onSnapshot((res) => {
             const _data = res.data();
@@ -38,6 +40,7 @@ export const DatabaseProvider: React.FC = ({ children }) => {
 
     return () => {
       authSubscriber();
+      dataSubscriber();
     };
   }, []);
 

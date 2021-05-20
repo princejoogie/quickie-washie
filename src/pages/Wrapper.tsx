@@ -10,7 +10,7 @@ import { DatabaseContext } from "../contexts/DatabaseContext";
 import { auth } from "../lib/firebase";
 import { AdminHome } from "./Admin";
 import { CarwashHome } from "./Carwash";
-import { UserHome } from "./User";
+import { UserAppointments, UserHistory, UserOwnedCars, UserHome } from "./User";
 
 const Stack = createStackNavigator();
 
@@ -25,7 +25,13 @@ const Wrapper: React.FC = () => {
           <>
             <Stack.Screen name="Login" component={Login} />
             <Stack.Screen name="Signup" component={Signup} />
-            <Stack.Screen name="CarwashSignup" component={CarwashSignup} />
+            <Stack.Screen
+              name="CarwashSignup"
+              component={CarwashSignup}
+              options={{
+                headerTitle: "Register your Carwash",
+              }}
+            />
           </>
         ) : privilege === "ADMIN" ? (
           <>
@@ -33,6 +39,7 @@ const Wrapper: React.FC = () => {
               name="AdminHome"
               component={AdminHome}
               options={{
+                headerTitle: "Admin",
                 headerRight: () => (
                   <TouchableOpacity onPress={() => auth.signOut()}>
                     <Icon name="logout" />
@@ -48,6 +55,7 @@ const Wrapper: React.FC = () => {
               name="CarwashHome"
               component={CarwashHome}
               options={{
+                headerTitle: "Home",
                 headerRight: () => (
                   <TouchableOpacity onPress={() => auth.signOut()}>
                     <Icon name="logout" />
@@ -63,12 +71,28 @@ const Wrapper: React.FC = () => {
               name="UserHome"
               component={UserHome}
               options={{
-                headerRight: () => (
-                  <TouchableOpacity onPress={() => auth.signOut()}>
-                    <Icon name="logout" />
-                  </TouchableOpacity>
-                ),
-                headerRightContainerStyle: tailwind("mr-2"),
+                headerTitle: "Home",
+              }}
+            />
+            <Stack.Screen
+              name="UserOwnedCars"
+              component={UserOwnedCars}
+              options={{
+                headerTitle: "Owned Cars",
+              }}
+            />
+            <Stack.Screen
+              name="UserHistory"
+              component={UserHistory}
+              options={{
+                headerTitle: "History",
+              }}
+            />
+            <Stack.Screen
+              name="UserAppointments"
+              component={UserAppointments}
+              options={{
+                headerTitle: "Appointments",
               }}
             />
           </>

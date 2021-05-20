@@ -25,8 +25,7 @@ export const DatabaseProvider: React.FC = ({ children }) => {
       if (user) {
         db.collection("users")
           .doc(user.uid)
-          .get()
-          .then((res) => {
+          .onSnapshot((res) => {
             const _data = res.data();
             const _privilege = _data?.privilege as Privilege;
 

@@ -73,58 +73,57 @@ const Signup: React.FC<SignupProps> = () => {
       auth
         .createUserWithEmailAndPassword(email.trim(), password.trim())
         .then((user) => {
-          db.collection("users")
-            .doc(user.user?.uid)
-            .set({
-              privilege: "USER",
-              fullName: name.trim(),
-              email: email.trim(),
-              phoneNumber: number.trim(),
-            })
-            .then(() => {
-              if (image && user.user) {
-                uploadImage(user.user, image).then((res) => console.log(res));
-                setLoading(false);
-              } else {
-                setLoading(false);
-              }
-            })
-            .catch((error) => {
-              setError(error.message);
-              setLoading(false);
-            });
+          maybeUploadImage(user.user, image);
         })
         .catch((error) => {
           setError(error.message);
           setLoading(false);
         });
     } else {
-      console.log("Errors");
+      auth.signOut();
       Vibration.vibrate();
     }
   };
 
-  const uploadImage = async (user: firebase.User, image: string) => {
-    const blob: Blob = await new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.onload = function () {
-        resolve(xhr.response);
-      };
-      xhr.onerror = function (e) {
-        console.log(e);
-        reject(new TypeError("Network request failed"));
-      };
-      xhr.responseType = "blob";
-      xhr.open("GET", image, true);
-      xhr.send(null);
+  const maybeUploadImage = async (
+    user: firebase.User | null,
+    image: string | undefined
+  ) => {
+    await db.collection("users").doc(user?.uid).set({
+      privilege: "USER",
+      fullName: name.trim(),
+      email: email.trim(),
+      phoneNumber: number.trim(),
     });
+    if (image) {
+      const _image =
+        Platform.OS === "ios" ? image.replace("file://", "") : image;
 
-    const ref = storage.ref(
-      `users/${user.uid}/${image.substring(image.lastIndexOf("/") + 1)}`
-    );
-    const snapshot = await ref.put(blob);
+      const blob: any = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.onload = function () {
+          resolve(xhr.response);
+        };
+        xhr.onerror = function () {
+          reject(new TypeError("Network request failed"));
+        };
+        xhr.responseType = "blob";
+        xhr.open("GET", _image, true);
+        xhr.send(null);
+      });
 
-    return await snapshot.ref.getDownloadURL();
+      const ref = storage.ref(`users/${user?.uid}/profile_picture.jpg`);
+      const snapshot = ref.put(blob);
+      const snap = await snapshot;
+      const url = await snap.ref.getDownloadURL();
+
+      await db.collection("users").doc(user?.uid).set(
+        {
+          photoURL: url,
+        },
+        { merge: true }
+      );
+    }
   };
 
   const pickImage = async () => {

@@ -136,7 +136,7 @@ const Signup: React.FC<SignupProps> = () => {
     });
 
     if (!result.cancelled) {
-      const { uri } = await resizePhoto(result.uri, [244, 244]);
+      const { uri } = await resizePhoto(result.uri, [224, 224]);
       setImage(uri);
     }
   };

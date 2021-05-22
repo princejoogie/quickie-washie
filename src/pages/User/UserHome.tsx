@@ -1,7 +1,9 @@
 import { useNavigation } from "@react-navigation/core";
 import React, { useContext, useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
+  Linking,
   Platform,
   ScrollView,
   Text,
@@ -13,15 +15,28 @@ import tailwind from "tailwind-rn";
 import { Divider } from "../../components";
 import { DatabaseContext } from "../../contexts/DatabaseContext";
 import { auth } from "../../lib/firebase";
+import * as Location from "expo-location";
 
-interface HomeProps {}
+interface ResProp {
+  lat: number;
+  long: number;
+  city: string;
+  street: string;
+}
 
-const Home: React.FC<HomeProps> = () => {
+const Home: React.FC = () => {
   const { data } = useContext(DatabaseContext);
   const [query, setQuery] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [results, setResults] = useState<ResProp[]>([]);
+  const [noResult, setNoResult] = useState(false);
   const navigation = useNavigation();
 
   useEffect(() => {
+    (async () => {
+      await Location.requestForegroundPermissionsAsync();
+    })();
+
     navigation.setOptions({
       headerRight: () => (
         <TouchableOpacity onPress={() => auth.signOut()}>
@@ -41,6 +56,40 @@ const Home: React.FC<HomeProps> = () => {
       headerLeftContainerStyle: tailwind("ml-2"),
     });
   }, []);
+
+  const searchCarwash = async (text: string) => {
+    if (text) {
+      setLoading(() => true);
+      const res = await Location.geocodeAsync(text);
+
+      if (res.length <= 0) {
+        setNoResult(() => true);
+        return;
+      } else {
+        setNoResult(() => false);
+      }
+
+      const _results: ResProp[] = [];
+      for (let i = 0; i < res.length; i++) {
+        const { latitude, longitude } = res[i];
+        const _addr = await Location.reverseGeocodeAsync({
+          latitude,
+          longitude,
+        });
+
+        const address = _addr[0];
+
+        _results.push({
+          lat: latitude,
+          long: longitude,
+          city: address.city ?? "N/A",
+          street: address.street ?? "N/A",
+        });
+      }
+      setResults(() => [..._results]);
+      setLoading(() => false);
+    }
+  };
 
   return (
     <ScrollView style={tailwind("flex flex-1")}>
@@ -105,7 +154,8 @@ const Home: React.FC<HomeProps> = () => {
         <SearchBar
           value={query}
           onChangeText={setQuery}
-          onSubmitEditing={() => console.log("Hello World")}
+          onSubmitEditing={() => searchCarwash(query)}
+          onClear={() => setResults([])}
           containerStyle={tailwind(
             "bg-transparent border rounded border-gray-400 m-0 p-0"
           )}
@@ -116,12 +166,38 @@ const Home: React.FC<HomeProps> = () => {
         />
       </View>
 
-      {/* <Button
-        onPress={() =>
-          Linking.openURL("https://waze.com/ul?ll=14.5311,121.0213&z=10")
-        }
-        title="APC on Waze"
-      /> */}
+      <View style={tailwind("px-4 pb-4")}>
+        {loading ? (
+          <ActivityIndicator size="small" color="#000" />
+        ) : noResult ? (
+          <Text>No Result</Text>
+        ) : (
+          results.map((result, i) => (
+            <View
+              key={`key${i}-${result.lat}-${result.long}`}
+              style={tailwind("bg-gray-200 rounded p-2")}
+            >
+              <TouchableOpacity
+                onPress={() =>
+                  Linking.openURL(
+                    `https://waze.com/ul?ll=${result.lat},${result.long}&z=10`
+                  )
+                }
+              >
+                <Text style={tailwind("text-blue-500 underline")}>
+                  Show in Waze
+                </Text>
+              </TouchableOpacity>
+
+              <Text style={tailwind("text-xs text-gray-500 mt-1")}>City</Text>
+              <Text>{result.city}</Text>
+
+              <Text style={tailwind("text-xs text-gray-500 mt-1")}>Street</Text>
+              <Text>{result.street}</Text>
+            </View>
+          ))
+        )}
+      </View>
     </ScrollView>
   );
 };

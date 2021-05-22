@@ -158,6 +158,9 @@ const Signup: React.FC<SignupProps> = () => {
     >
       <ScrollView style={tailwind("flex flex-1")}>
         <View style={tailwind("m-4")}>
+          <Text style={tailwind("text-xs text-gray-600 self-center mb-2")}>
+            Profile Picture
+          </Text>
           <View style={tailwind("w-full items-center justify-center")}>
             <Avatar
               size="xlarge"

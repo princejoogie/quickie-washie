@@ -1,23 +1,35 @@
-import React, { createRef, useState } from "react";
+import React, { createRef, useEffect, useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   Text,
   TextInput,
+  TouchableOpacity,
   Vibration,
   View,
 } from "react-native";
-import { Input, Avatar, Button } from "react-native-elements";
-import { Icon } from "react-native-elements/dist/icons/Icon";
+import { Icon, Input, Avatar, Button } from "react-native-elements";
 import tailwind from "tailwind-rn";
 import { auth, db, storage, firebase } from "../lib/firebase";
 import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from "expo-image-manipulator";
+import * as Location from "expo-location";
+import MapView, { Marker } from "react-native-maps";
+import { WIDTH } from "../constants";
+import { useNavigation } from "@react-navigation/core";
 
 interface SignupProps {}
 
+interface PickImageProps {
+  aspect?: [number, number] | undefined;
+  resize?: boolean;
+  allowsEditing?: boolean;
+  setPhoto: React.Dispatch<React.SetStateAction<string | undefined>>;
+}
+
 const CarwashSignup: React.FC<SignupProps> = () => {
+  const navigation = useNavigation();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [number, setNumber] = useState("+63");
@@ -39,6 +51,24 @@ const CarwashSignup: React.FC<SignupProps> = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState<string | undefined>("");
+  const [permitImage, setPermitImage] = useState<string | undefined>("");
+
+  // Location Variables
+  const [location, setLocation] = useState<{
+    latitude: number;
+    longitude: number;
+  }>({ latitude: 14.5176, longitude: 121.0509 });
+
+  useEffect(() => {
+    (async () => {
+      await Location.requestForegroundPermissionsAsync();
+      const res = await Location.getCurrentPositionAsync();
+      setLocation({
+        latitude: res.coords.latitude,
+        longitude: res.coords.longitude,
+      });
+    })();
+  }, []);
 
   const isValid = () => {
     const _errors = errors;
@@ -73,7 +103,7 @@ const CarwashSignup: React.FC<SignupProps> = () => {
       auth
         .createUserWithEmailAndPassword(email.trim(), password.trim())
         .then((user) => {
-          maybeUploadImage(user.user, image);
+          maybeUploadImage(user.user, image, permitImage);
         })
         .catch((error) => {
           setError(error.message);
@@ -87,14 +117,23 @@ const CarwashSignup: React.FC<SignupProps> = () => {
 
   const maybeUploadImage = async (
     user: firebase.User | null,
-    image: string | undefined
+    image: string | undefined,
+    permitImage: string | undefined
   ) => {
-    await db.collection("users").doc(user?.uid).set({
-      privilege: "CARWASH_OWNER",
-      fullName: name.trim(),
-      email: email.trim(),
-      phoneNumber: number.trim(),
-    });
+    await db
+      .collection("users")
+      .doc(user?.uid)
+      .set({
+        approved: false,
+        privilege: "CARWASH_OWNER",
+        fullName: name.trim(),
+        email: email.trim(),
+        phoneNumber: number.trim(),
+        location: {
+          latitude: location.latitude,
+          longitude: location.longitude,
+        },
+      });
     if (image) {
       const _image =
         Platform.OS === "ios" ? image.replace("file://", "") : image;
@@ -112,7 +151,7 @@ const CarwashSignup: React.FC<SignupProps> = () => {
         xhr.send(null);
       });
 
-      const ref = storage.ref(`users/${user?.uid}/profile_picture.jpg`);
+      const ref = storage.ref(`shops/${user?.uid}/shop_logo.jpg`);
       const snapshot = ref.put(blob);
       const snap = await snapshot;
       const url = await snap.ref.getDownloadURL();
@@ -124,20 +163,85 @@ const CarwashSignup: React.FC<SignupProps> = () => {
         { merge: true }
       );
     }
+
+    if (permitImage) {
+      const _image =
+        Platform.OS === "ios"
+          ? permitImage.replace("file://", "")
+          : permitImage;
+
+      const blob: any = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.onload = function () {
+          resolve(xhr.response);
+        };
+        xhr.onerror = function () {
+          reject(new TypeError("Network request failed"));
+        };
+        xhr.responseType = "blob";
+        xhr.open("GET", _image, true);
+        xhr.send(null);
+      });
+
+      const ref = storage.ref(`shops/${user?.uid}/permit.jpg`);
+      const snapshot = ref.put(blob);
+      const snap = await snapshot;
+      const url = await snap.ref.getDownloadURL();
+
+      await db.collection("users").doc(user?.uid).set(
+        {
+          permitURL: url,
+        },
+        { merge: true }
+      );
+    }
   };
 
-  const pickImage = async () => {
+  const pickImage = async ({
+    aspect = [1, 1],
+    allowsEditing = true,
+    resize = true,
+    setPhoto,
+  }: PickImageProps) => {
     await ImagePicker.requestCameraPermissionsAsync();
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
+      aspect,
+      allowsEditing,
       quality: 1,
     });
 
     if (!result.cancelled) {
-      const { uri } = await resizePhoto(result.uri, [224, 224]);
-      setImage(uri);
+      if (resize) {
+        const { uri } = await resizePhoto(result.uri, [224, 224]);
+        setPhoto(uri);
+      } else {
+        setPhoto(result.uri);
+      }
+    }
+  };
+
+  const takePhoto = async ({
+    aspect = [1, 1],
+    allowsEditing = true,
+    resize = true,
+    setPhoto,
+  }: PickImageProps) => {
+    await ImagePicker.requestCameraPermissionsAsync();
+    let result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      aspect,
+      allowsEditing,
+      quality: 1,
+    });
+
+    if (!result.cancelled) {
+      if (resize) {
+        const { uri } = await resizePhoto(result.uri, [224, 224]);
+        setPhoto(uri);
+      } else {
+        setPhoto(result.uri);
+      }
     }
   };
 
@@ -158,15 +262,24 @@ const CarwashSignup: React.FC<SignupProps> = () => {
     >
       <ScrollView style={tailwind("flex flex-1")}>
         <View style={tailwind("m-4")}>
+          <Text style={tailwind("text-xs text-gray-600 self-center mb-2")}>
+            Shop Logo
+          </Text>
           <View style={tailwind("w-full items-center justify-center")}>
             <Avatar
               size="xlarge"
               containerStyle={tailwind("bg-gray-300")}
               rounded
+              onPress={() => {
+                if (image) navigation.navigate("ViewPhoto", { uri: image });
+              }}
               source={image ? { uri: image } : undefined}
               icon={{ type: "feather", name: "image" }}
             >
-              <Avatar.Accessory size={30} onPress={pickImage} />
+              <Avatar.Accessory
+                size={30}
+                onPress={() => pickImage({ setPhoto: setImage })}
+              />
             </Avatar>
           </View>
 
@@ -199,9 +312,87 @@ const CarwashSignup: React.FC<SignupProps> = () => {
             inputStyle={tailwind("pl-2 text-sm")}
           />
 
+          <Text style={tailwind("text-xs text-gray-600")}>
+            Mark your shop Location
+          </Text>
+          <View
+            style={tailwind(
+              "border border-gray-300 rounded-md overflow-hidden mt-2"
+            )}
+          >
+            <MapView
+              initialRegion={{
+                latitude: location.latitude,
+                longitude: location.longitude,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+              }}
+              onPress={(e) => {
+                const { latitude, longitude } = e.nativeEvent.coordinate;
+                setLocation({ latitude, longitude });
+              }}
+              style={[tailwind("w-full"), { height: WIDTH * (2 / 3) }]}
+            >
+              <Marker
+                coordinate={{
+                  latitude: location.latitude,
+                  longitude: location.longitude,
+                }}
+              />
+            </MapView>
+          </View>
+
+          <Text style={tailwind("text-xs text-gray-600 mt-4")}>
+            Business Permit Picture
+          </Text>
+          <View
+            style={tailwind("flex flex-row mt-2 items-center justify-between")}
+          >
+            <Avatar
+              size="medium"
+              containerStyle={tailwind("bg-gray-300")}
+              source={permitImage ? { uri: permitImage } : undefined}
+              icon={{ type: "feather", name: "image" }}
+              onPress={() => {
+                if (permitImage)
+                  navigation.navigate("ViewPhoto", { uri: permitImage });
+              }}
+              imageProps={{ resizeMode: "cover", resizeMethod: "auto" }}
+            />
+
+            <View style={tailwind("flex flex-row items-center")}>
+              <TouchableOpacity
+                onPress={() =>
+                  takePhoto({
+                    aspect: undefined,
+                    setPhoto: setPermitImage,
+                    allowsEditing: false,
+                  })
+                }
+              >
+                <Icon name="camera" type="feather" color="#4B5563" size={18} />
+                <Text style={tailwind("text-xs text-gray-600")}>Camera</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() =>
+                  pickImage({
+                    aspect: undefined,
+                    setPhoto: setPermitImage,
+                    allowsEditing: false,
+                  })
+                }
+                style={tailwind("ml-4")}
+              >
+                <Icon name="upload" type="feather" color="#4B5563" size={18} />
+                <Text style={tailwind("text-xs text-gray-600")}>Upload</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
           <Text
             style={tailwind(
-              `text-xs ${errors.name ? "text-red-500" : "text-gray-600"}`
+              `text-xs mt-4 ${errors.name ? "text-red-500" : "text-gray-600"}`
             )}
           >
             Full Name {errors.name && "Required"}

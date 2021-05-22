@@ -11,6 +11,7 @@ import { auth } from "../lib/firebase";
 import { AdminHome } from "./Admin";
 import { CarwashHome } from "./Carwash";
 import { UserAppointments, UserHistory, UserOwnedCars, UserHome } from "./User";
+import { ViewPhoto } from "../components";
 
 const Stack = createStackNavigator();
 
@@ -97,6 +98,11 @@ const Wrapper: React.FC = () => {
             />
           </>
         )}
+        <Stack.Screen
+          name="ViewPhoto"
+          component={ViewPhoto}
+          options={{ headerTitle: "View Photo" }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

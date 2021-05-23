@@ -17,7 +17,7 @@ const CarwashItem: React.FC<Item> = ({ shop }) => {
   return (
     <TouchableOpacity
       onPress={() => {
-        navigation.navigate("ShopDetailsApproval");
+        navigation.navigate("ShopDetailsApproval", { shop });
       }}
       activeOpacity={0.7}
       style={[

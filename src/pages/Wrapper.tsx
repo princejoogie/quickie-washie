@@ -8,11 +8,10 @@ import { Icon } from "react-native-elements";
 import { createStackNavigator } from "@react-navigation/stack";
 import { DatabaseContext } from "../contexts/DatabaseContext";
 import { auth } from "../lib/firebase";
-import { AdminHome } from "./admin";
+import { AdminHome, ShopDetailsApproval } from "./admin";
 import { CarwashHome } from "./carwash";
 import { UserAppointments, UserHistory, UserOwnedCars, UserHome } from "./user";
 import { ViewPhoto } from "../components";
-import ShopDetailsApproval from "./admin/ShopDetailsApproval";
 
 const Stack = createStackNavigator();
 

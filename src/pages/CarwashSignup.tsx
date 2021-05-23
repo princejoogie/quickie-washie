@@ -45,6 +45,7 @@ const CarwashSignup: React.FC<SignupProps> = () => {
   const passwordRef = createRef<TextInput>();
   const confirmRef = createRef<TextInput>();
   const [errors, setErrors] = useState({
+    permitImage: false,
     shopName: false,
     name: false,
     email: false,
@@ -76,6 +77,9 @@ const CarwashSignup: React.FC<SignupProps> = () => {
 
   const isValid = () => {
     const _errors = errors;
+
+    if (!permitImage) _errors.permitImage = true;
+    else _errors.permitImage = false;
 
     if (!shopName.trim()) _errors.shopName = true;
     else _errors.shopName = false;
@@ -208,9 +212,9 @@ const CarwashSignup: React.FC<SignupProps> = () => {
   };
 
   const pickImage = async ({
-    aspect = [1, 1],
-    allowsEditing = true,
-    resize = true,
+    aspect = undefined,
+    allowsEditing = false,
+    resize = false,
     setPhoto,
   }: PickImageProps) => {
     await ImagePicker.requestCameraPermissionsAsync();
@@ -232,9 +236,9 @@ const CarwashSignup: React.FC<SignupProps> = () => {
   };
 
   const takePhoto = async ({
-    aspect = [1, 1],
-    allowsEditing = true,
-    resize = true,
+    aspect = undefined,
+    allowsEditing = false,
+    resize = false,
     setPhoto,
   }: PickImageProps) => {
     await ImagePicker.requestCameraPermissionsAsync();
@@ -288,7 +292,14 @@ const CarwashSignup: React.FC<SignupProps> = () => {
             >
               <Avatar.Accessory
                 size={30}
-                onPress={() => pickImage({ setPhoto: setImage })}
+                onPress={() =>
+                  pickImage({
+                    setPhoto: setImage,
+                    aspect: [1, 1],
+                    resize: true,
+                    allowsEditing: true,
+                  })
+                }
               />
             </Avatar>
           </View>
@@ -355,8 +366,14 @@ const CarwashSignup: React.FC<SignupProps> = () => {
           </View>
 
           <View style={tailwind("flex flex-row w-full items-center")}>
-            <Text style={tailwind("text-xs text-gray-600 mt-4 flex-1")}>
-              Business Permit Picture
+            <Text
+              style={tailwind(
+                `text-xs mt-4 flex-1 ${
+                  errors.permitImage ? "text-red-500" : "text-gray-600"
+                }`
+              )}
+            >
+              Business Permit {errors.permitImage && "Required"}
             </Text>
             <Text
               style={[
@@ -390,9 +407,8 @@ const CarwashSignup: React.FC<SignupProps> = () => {
                   <TouchableOpacity
                     onPress={() =>
                       takePhoto({
-                        aspect: undefined,
                         setPhoto: setPermitImage,
-                        allowsEditing: false,
+                        allowsEditing: true,
                       })
                     }
                   >
@@ -410,9 +426,8 @@ const CarwashSignup: React.FC<SignupProps> = () => {
                   <TouchableOpacity
                     onPress={() =>
                       pickImage({
-                        aspect: undefined,
                         setPhoto: setPermitImage,
-                        allowsEditing: false,
+                        allowsEditing: true,
                       })
                     }
                     style={tailwind("ml-4")}

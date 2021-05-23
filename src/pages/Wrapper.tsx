@@ -8,10 +8,11 @@ import { Icon } from "react-native-elements";
 import { createStackNavigator } from "@react-navigation/stack";
 import { DatabaseContext } from "../contexts/DatabaseContext";
 import { auth } from "../lib/firebase";
-import { AdminHome } from "./Admin";
-import { CarwashHome } from "./Carwash";
-import { UserAppointments, UserHistory, UserOwnedCars, UserHome } from "./User";
+import { AdminHome } from "./admin";
+import { CarwashHome } from "./carwash";
+import { UserAppointments, UserHistory, UserOwnedCars, UserHome } from "./user";
 import { ViewPhoto } from "../components";
+import ShopDetailsApproval from "./admin/ShopDetailsApproval";
 
 const Stack = createStackNavigator();
 
@@ -47,6 +48,13 @@ const Wrapper: React.FC = () => {
                   </TouchableOpacity>
                 ),
                 headerRightContainerStyle: tailwind("mr-2"),
+              }}
+            />
+            <Stack.Screen
+              name="ShopDetailsApproval"
+              component={ShopDetailsApproval}
+              options={{
+                headerTitle: "Shop Details",
               }}
             />
           </>

@@ -4,6 +4,7 @@ import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { Avatar, Icon } from "react-native-elements";
 import tailwind from "tailwind-rn";
 import { Divider } from "../../components";
+import { PendingCarwashList } from "../../components/admin";
 import { AdminContext } from "../../contexts/Admin/AdminContext";
 import { DatabaseContext } from "../../contexts/DatabaseContext";
 import { auth } from "../../lib/firebase";
@@ -111,11 +112,7 @@ const AdminHome: React.FC<HomeProps> = () => {
 
       <Divider />
 
-      <View style={tailwind("p-4")}>
-        <Text style={tailwind("self-center")}>
-          Pending Carwash Shop Approvals
-        </Text>
-      </View>
+      <PendingCarwashList />
     </ScrollView>
   );
 };

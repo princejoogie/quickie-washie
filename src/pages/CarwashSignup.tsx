@@ -16,8 +16,9 @@ import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from "expo-image-manipulator";
 import * as Location from "expo-location";
 import MapView, { Marker } from "react-native-maps";
-import { WIDTH } from "../constants";
+import { CITIES, WIDTH } from "../constants";
 import { useNavigation } from "@react-navigation/core";
+import { Picker } from "@react-native-picker/picker";
 
 interface SignupProps {}
 
@@ -30,6 +31,8 @@ interface PickImageProps {
 
 const CarwashSignup: React.FC<SignupProps> = () => {
   const navigation = useNavigation();
+  const [city, setCity] = useState(CITIES[0]);
+  const [shopName, setShopName] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [number, setNumber] = useState("+63");
@@ -42,6 +45,7 @@ const CarwashSignup: React.FC<SignupProps> = () => {
   const passwordRef = createRef<TextInput>();
   const confirmRef = createRef<TextInput>();
   const [errors, setErrors] = useState({
+    shopName: false,
     name: false,
     email: false,
     number: false,
@@ -72,6 +76,10 @@ const CarwashSignup: React.FC<SignupProps> = () => {
 
   const isValid = () => {
     const _errors = errors;
+
+    if (!shopName.trim()) _errors.shopName = true;
+    else _errors.shopName = false;
+
     if (!name.trim()) _errors.name = true;
     else _errors.name = false;
 
@@ -126,6 +134,8 @@ const CarwashSignup: React.FC<SignupProps> = () => {
       .set({
         approved: false,
         privilege: "CARWASH_OWNER",
+        city: city,
+        shopName: shopName.trim(),
         fullName: name.trim(),
         email: email.trim(),
         phoneNumber: number.trim(),
@@ -291,16 +301,18 @@ const CarwashSignup: React.FC<SignupProps> = () => {
 
           <Text
             style={tailwind(
-              `text-xs mt-4 ${errors.name ? "text-red-500" : "text-gray-600"}`
+              `text-xs mt-4 ${
+                errors.shopName ? "text-red-500" : "text-gray-600"
+              }`
             )}
           >
-            Shop Name {errors.name && "Required"}
+            Shop Name {errors.shopName && "Required"}
           </Text>
           <Input
             disabled={loading}
             onSubmitEditing={() => emailRef.current?.focus()}
-            onChangeText={setName}
-            value={name}
+            onChangeText={setShopName}
+            value={shopName}
             placeholder="Carwash Name"
             containerStyle={tailwind("p-0 m-0")}
             leftIcon={{
@@ -342,51 +354,104 @@ const CarwashSignup: React.FC<SignupProps> = () => {
             </MapView>
           </View>
 
-          <Text style={tailwind("text-xs text-gray-600 mt-4")}>
-            Business Permit Picture
-          </Text>
-          <View
-            style={tailwind("flex flex-row mt-2 items-center justify-between")}
-          >
-            <Avatar
-              size="medium"
-              containerStyle={tailwind("bg-gray-300")}
-              source={permitImage ? { uri: permitImage } : undefined}
-              icon={{ type: "feather", name: "image" }}
-              onPress={() => {
-                if (permitImage)
-                  navigation.navigate("ViewPhoto", { uri: permitImage });
-              }}
-              imageProps={{ resizeMode: "cover", resizeMethod: "auto" }}
-            />
-
-            <View style={tailwind("flex flex-row items-center")}>
-              <TouchableOpacity
-                onPress={() =>
-                  takePhoto({
-                    aspect: undefined,
-                    setPhoto: setPermitImage,
-                    allowsEditing: false,
-                  })
-                }
+          <View style={tailwind("flex flex-row w-full items-center")}>
+            <Text style={tailwind("text-xs text-gray-600 mt-4 flex-1")}>
+              Business Permit Picture
+            </Text>
+            <Text
+              style={[
+                tailwind("text-xs text-gray-600 mt-4"),
+                { width: WIDTH * (1 / 3) },
+              ]}
+            >
+              City
+            </Text>
+          </View>
+          <View style={tailwind("flex flex-row overflow-hidden")}>
+            <View style={tailwind("flex-1 mr-2")}>
+              <View
+                style={tailwind(
+                  "flex flex-row mt-2 items-center justify-between"
+                )}
               >
-                <Icon name="camera" type="feather" color="#4B5563" size={18} />
-                <Text style={tailwind("text-xs text-gray-600")}>Camera</Text>
-              </TouchableOpacity>
+                <Avatar
+                  size="medium"
+                  containerStyle={tailwind("bg-gray-300")}
+                  source={permitImage ? { uri: permitImage } : undefined}
+                  icon={{ type: "feather", name: "image" }}
+                  onPress={() => {
+                    if (permitImage)
+                      navigation.navigate("ViewPhoto", { uri: permitImage });
+                  }}
+                  imageProps={{ resizeMode: "cover", resizeMethod: "auto" }}
+                />
 
-              <TouchableOpacity
-                onPress={() =>
-                  pickImage({
-                    aspect: undefined,
-                    setPhoto: setPermitImage,
-                    allowsEditing: false,
-                  })
-                }
-                style={tailwind("ml-4")}
+                <View style={tailwind("flex flex-row items-center")}>
+                  <TouchableOpacity
+                    onPress={() =>
+                      takePhoto({
+                        aspect: undefined,
+                        setPhoto: setPermitImage,
+                        allowsEditing: false,
+                      })
+                    }
+                  >
+                    <Icon
+                      name="camera"
+                      type="feather"
+                      color="#4B5563"
+                      size={18}
+                    />
+                    <Text style={tailwind("text-xs text-gray-600")}>
+                      Camera
+                    </Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() =>
+                      pickImage({
+                        aspect: undefined,
+                        setPhoto: setPermitImage,
+                        allowsEditing: false,
+                      })
+                    }
+                    style={tailwind("ml-4")}
+                  >
+                    <Icon
+                      name="upload"
+                      type="feather"
+                      color="#4B5563"
+                      size={18}
+                    />
+                    <Text style={tailwind("text-xs text-gray-600")}>
+                      Upload
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+
+            <View style={tailwind("w-px bg-gray-400 mx-2")} />
+
+            <View
+              style={[
+                tailwind(
+                  `flex mt-1 justify-center rounded-md ${
+                    Platform.OS === "android" ? "bg-gray-300" : "bg-transparent"
+                  }`
+                ),
+                { width: WIDTH * (1 / 3), height: 50 },
+              ]}
+            >
+              <Picker
+                itemStyle={{ fontSize: 14 }}
+                selectedValue={city}
+                onValueChange={(val) => setCity(val)}
               >
-                <Icon name="upload" type="feather" color="#4B5563" size={18} />
-                <Text style={tailwind("text-xs text-gray-600")}>Upload</Text>
-              </TouchableOpacity>
+                {CITIES.map((city) => (
+                  <Picker.Item key={city} label={city} value={city} />
+                ))}
+              </Picker>
             </View>
           </View>
 

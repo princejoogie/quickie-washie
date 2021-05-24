@@ -10,13 +10,21 @@ import { DatabaseContext } from "../contexts/DatabaseContext";
 import { auth } from "../lib/firebase";
 import { AdminHome, ShopDetailsApproval } from "./admin";
 import { CarwashHome } from "./carwash";
-import { UserAppointments, UserHistory, UserOwnedCars, UserHome } from "./user";
-import { ViewPhoto } from "../components";
+import {
+  UserAppointments,
+  UserHistory,
+  UserOwnedCars,
+  UserHome,
+  UProfile,
+} from "./user";
+import { Loading, ViewPhoto } from "../components";
 
 const Stack = createStackNavigator();
 
 const Wrapper: React.FC = () => {
-  const { user, privilege } = useContext(DatabaseContext);
+  const { user, privilege, loading } = useContext(DatabaseContext);
+
+  if (loading) return <Loading />;
 
   return (
     <NavigationContainer>
@@ -101,6 +109,13 @@ const Wrapper: React.FC = () => {
               component={UserAppointments}
               options={{
                 headerTitle: "Appointments",
+              }}
+            />
+            <Stack.Screen
+              name="UserProfile"
+              component={UProfile}
+              options={{
+                headerTitle: "Edit Profile",
               }}
             />
           </>

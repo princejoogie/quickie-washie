@@ -6,12 +6,14 @@ interface Ret {
   user: firebase.User | null;
   data: firebase.firestore.DocumentData | undefined;
   privilege: Privilege;
+  loading: boolean;
 }
 
 export const DatabaseContext = createContext<Ret>({
   user: null,
   data: undefined,
   privilege: "USER",
+  loading: true,
 });
 
 export const DatabaseProvider: React.FC = ({ children }) => {
@@ -19,33 +21,44 @@ export const DatabaseProvider: React.FC = ({ children }) => {
   const [privilege, setPrivilege] = useState<Privilege>("USER");
   const [data, setData] =
     useState<firebase.firestore.DocumentData | undefined>(undefined);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let dataSubscriber: () => void;
-    const authSubscriber = auth.onAuthStateChanged((user) => {
-      if (user) {
-        dataSubscriber = db
-          .collection("users")
-          .doc(user.uid)
-          .onSnapshot((res) => {
-            const _data = res.data();
-            const _privilege = _data?.privilege as Privilege;
-
-            setData(_data);
-            setPrivilege(_privilege);
-            setUser(user);
-          });
-      } else setUser(user);
-    });
-
+    const authSubscriber = auth.onAuthStateChanged(setUser);
     return () => {
       authSubscriber();
-      dataSubscriber();
     };
   }, []);
 
+  useEffect(() => {
+    let dataSub = () => {};
+    setLoading(() => true);
+
+    if (user) {
+      dataSub = db
+        .collection("users")
+        .doc(user.uid)
+        .onSnapshot((res) => {
+          const _data = res.data();
+          const _privilege = _data?.privilege ?? "USER";
+
+          setData(_data);
+          setPrivilege(_privilege);
+          setLoading(() => false);
+        });
+    } else {
+      setData(undefined);
+      setPrivilege("USER");
+      setLoading(() => false);
+    }
+
+    return () => {
+      dataSub();
+    };
+  }, [user]);
+
   return (
-    <DatabaseContext.Provider value={{ user, data, privilege }}>
+    <DatabaseContext.Provider value={{ user, data, privilege, loading }}>
       {children}
     </DatabaseContext.Provider>
   );

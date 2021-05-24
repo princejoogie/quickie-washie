@@ -1,9 +1,6 @@
 import { useNavigation } from "@react-navigation/core";
 import React, { useContext, useEffect, useState } from "react";
 import {
-  ActivityIndicator,
-  Alert,
-  Linking,
   Platform,
   ScrollView,
   Text,
@@ -14,27 +11,69 @@ import { Avatar, Icon, SearchBar } from "react-native-elements";
 import tailwind from "tailwind-rn";
 import { Divider } from "../../components";
 import { DatabaseContext } from "../../contexts/DatabaseContext";
-import { auth } from "../../lib/firebase";
+import { auth, firebase } from "../../lib/firebase";
 import * as Location from "expo-location";
+import { SHADOW_SM } from "../../constants";
+import { AdminContext } from "../../contexts/Admin/AdminContext";
 
-interface ResProp {
-  lat: number;
-  long: number;
-  city: string;
-  street: string;
+interface Item {
+  shop: firebase.firestore.DocumentData;
 }
+
+const CarwashItem: React.FC<Item> = ({ shop }) => {
+  return (
+    <TouchableOpacity
+      onPress={() => {
+        // navigation.navigate("ShopDetailsApproval", { shop });
+      }}
+      activeOpacity={0.7}
+      style={[
+        tailwind("bg-white rounded-md p-3 flex flex-row mt-2"),
+        { ...SHADOW_SM },
+      ]}
+    >
+      <View style={tailwind("flex-1")}>
+        <View>
+          <Text style={tailwind("font-bold text-lg")}>{shop.shopName}</Text>
+        </View>
+
+        <View style={tailwind("flex w-full flex-row mt-2")}>
+          <Avatar
+            rounded
+            size="medium"
+            source={{ uri: shop.photoURL }}
+            icon={{ type: "feather", name: "image" }}
+          />
+
+          <View style={tailwind("ml-2 flex justify-center")}>
+            <Text style={tailwind("text-xs text-gray-600")}>
+              {shop.fullName}
+            </Text>
+            <Text style={tailwind("text-xs text-gray-600")}>
+              {shop.phoneNumber}
+            </Text>
+            <Text style={tailwind("text-xs text-gray-600")}>{shop.city}</Text>
+          </View>
+        </View>
+      </View>
+
+      <View style={tailwind("flex items-end justify-between")}>
+        <Icon name="chevron-right" type="feather" color="#4B5563" />
+      </View>
+    </TouchableOpacity>
+  );
+};
 
 const Home: React.FC = () => {
   const { data } = useContext(DatabaseContext);
+  const { approvedShops } = useContext(AdminContext);
   const [query, setQuery] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState<ResProp[]>([]);
-  const [noResult, setNoResult] = useState(false);
   const navigation = useNavigation();
 
   useEffect(() => {
     (async () => {
       await Location.requestForegroundPermissionsAsync();
+      await Location.requestBackgroundPermissionsAsync();
     })();
 
     navigation.setOptions({
@@ -47,7 +86,7 @@ const Home: React.FC = () => {
       headerLeft: () => (
         <TouchableOpacity
           onPress={() => {
-            Alert.alert("Profile Page", `Hi, ${data?.fullName ?? "User"}`);
+            navigation.navigate("UserProfile", { data });
           }}
         >
           <Icon name="user" type="feather" />
@@ -58,37 +97,7 @@ const Home: React.FC = () => {
   }, []);
 
   const searchCarwash = async (text: string) => {
-    if (text) {
-      setLoading(() => true);
-      const res = await Location.geocodeAsync(text);
-
-      if (res.length <= 0) {
-        setNoResult(() => true);
-        return;
-      } else {
-        setNoResult(() => false);
-      }
-
-      const _results: ResProp[] = [];
-      for (let i = 0; i < res.length; i++) {
-        const { latitude, longitude } = res[i];
-        const _addr = await Location.reverseGeocodeAsync({
-          latitude,
-          longitude,
-        });
-
-        const address = _addr[0];
-
-        _results.push({
-          lat: latitude,
-          long: longitude,
-          city: address.city ?? "N/A",
-          street: address.street ?? "N/A",
-        });
-      }
-      setResults(() => [..._results]);
-      setLoading(() => false);
-    }
+    console.log({ text });
   };
 
   return (
@@ -155,7 +164,6 @@ const Home: React.FC = () => {
           value={query}
           onChangeText={setQuery}
           onSubmitEditing={() => searchCarwash(query)}
-          onClear={() => setResults([])}
           containerStyle={tailwind(
             "bg-transparent border rounded border-gray-400 m-0 p-0"
           )}
@@ -167,36 +175,13 @@ const Home: React.FC = () => {
       </View>
 
       <View style={tailwind("px-4 pb-4")}>
-        {loading ? (
-          <ActivityIndicator size="small" color="#000" />
-        ) : noResult ? (
-          <Text>No Result</Text>
-        ) : (
-          results.map((result, i) => (
-            <View
-              key={`key${i}-${result.lat}-${result.long}`}
-              style={tailwind("bg-gray-200 rounded p-2")}
-            >
-              <TouchableOpacity
-                onPress={() =>
-                  Linking.openURL(
-                    `https://waze.com/ul?ll=${result.lat},${result.long}&z=10`
-                  )
-                }
-              >
-                <Text style={tailwind("text-blue-500 underline")}>
-                  Show in Waze
-                </Text>
-              </TouchableOpacity>
+        <Text style={tailwind("text-xs text-gray-600")}>
+          Carwash Shops Near You
+        </Text>
 
-              <Text style={tailwind("text-xs text-gray-500 mt-1")}>City</Text>
-              <Text>{result.city}</Text>
-
-              <Text style={tailwind("text-xs text-gray-500 mt-1")}>Street</Text>
-              <Text>{result.street}</Text>
-            </View>
-          ))
-        )}
+        {approvedShops.map((shop) => (
+          <CarwashItem key={shop.id} shop={shop} />
+        ))}
       </View>
     </ScrollView>
   );

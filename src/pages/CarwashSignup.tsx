@@ -10,7 +10,7 @@ import {
   View,
 } from "react-native";
 import { Icon, Input, Avatar, Button } from "react-native-elements";
-import tailwind from "tailwind-rn";
+import tailwind, { create } from "tailwind-rn";
 import { auth, db, storage, firebase } from "../lib/firebase";
 import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from "expo-image-manipulator";
@@ -40,6 +40,7 @@ const CarwashSignup: React.FC<SignupProps> = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirm, setConfirm] = useState("");
   const [confirmVisible, setConfirmVisible] = useState(false);
+  const fullNameRef = createRef<TextInput>();
   const emailRef = createRef<TextInput>();
   const numberRef = createRef<TextInput>();
   const passwordRef = createRef<TextInput>();
@@ -321,7 +322,7 @@ const CarwashSignup: React.FC<SignupProps> = () => {
           </Text>
           <Input
             disabled={loading}
-            onSubmitEditing={() => emailRef.current?.focus()}
+            onSubmitEditing={() => fullNameRef.current?.focus()}
             onChangeText={setShopName}
             value={shopName}
             placeholder="Carwash Name"
@@ -480,6 +481,7 @@ const CarwashSignup: React.FC<SignupProps> = () => {
           <Input
             disabled={loading}
             onSubmitEditing={() => emailRef.current?.focus()}
+            ref={fullNameRef}
             onChangeText={setName}
             value={name}
             placeholder="John Doe"

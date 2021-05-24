@@ -19,7 +19,7 @@ const DeetItem: React.FC<DeetItemProps> = ({
   return (
     <View style={tailwind(`flex ${className}`)}>
       <Text style={tailwind("mt-2 text-xs text-gray-600")}>{title}</Text>
-      <Text style={tailwind("bg-gray-200 rounded mt-1 p-1")}>{content}</Text>
+      <Text style={tailwind("bg-gray-200 rounded mt-1 p-2")}>{content}</Text>
     </View>
   );
 };
@@ -84,10 +84,10 @@ const ShopDetailsApproval: React.FC = () => {
                 {
                   text: "OK",
                   onPress: async () => {
+                    navigation.goBack();
                     await db.collection("users").doc(shop.id).update({
                       approved: true,
                     });
-                    navigation.goBack();
                   },
                 },
               ]);

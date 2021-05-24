@@ -112,6 +112,14 @@ const AdminHome: React.FC<HomeProps> = () => {
 
       <Divider />
 
+      <View style={tailwind("py-2 px-6")}>
+        <TouchableOpacity>
+          <Text>Approved Carwash Shops </Text>
+        </TouchableOpacity>
+      </View>
+
+      <Divider />
+
       <PendingCarwashList />
     </ScrollView>
   );

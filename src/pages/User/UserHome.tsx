@@ -176,7 +176,7 @@ const Home: React.FC = () => {
 
       <View style={tailwind("px-4 pb-4")}>
         <Text style={tailwind("text-xs text-gray-600")}>
-          Carwash Shops Near You
+          Carwash Shops Available
         </Text>
 
         {approvedShops.map((shop) => (

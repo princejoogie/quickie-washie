@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, View } from "react-native";
 import { useRoute } from "@react-navigation/core";
 import { firebase } from "../../lib/firebase";
 import tailwind from "tailwind-rn";
@@ -8,7 +8,7 @@ import { Avatar } from "react-native-elements";
 const UProfile: React.FC = () => {
   const route = useRoute();
   const { data } = route.params as { data: firebase.firestore.DocumentData };
-  const [image, setImage] = useState<string | undefined>("");
+  const [image] = useState<string | undefined>("");
 
   const pickImage = () => {
     console.log("Hello World");

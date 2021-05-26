@@ -18,7 +18,7 @@ import {
   UProfile,
 } from "./user";
 import { Loading, ViewPhoto } from "../components";
-import { ShopWrapper } from "./user/car-shop";
+import ShopWrapper from "./user/car-shop/ShopWrapper";
 
 const Stack = createStackNavigator();
 

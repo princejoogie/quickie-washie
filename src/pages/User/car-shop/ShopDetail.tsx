@@ -47,9 +47,23 @@ const ShopDetail: React.FC = () => {
             <Text numberOfLines={1} style={tailwind("text-lg")}>
               {shop.shopName ?? "Shop Name"}
             </Text>
-            <Text numberOfLines={1} style={tailwind("text-gray-500")}>
-              {shop.email ?? "email@example.com"}
-            </Text>
+
+            <TouchableOpacity
+              activeOpacity={0.5}
+              onPress={() => {
+                Linking.openURL(
+                  `mailto:${shop.email}?subject=Appointment Booking`
+                );
+              }}
+            >
+              <Text
+                numberOfLines={1}
+                style={tailwind("mt-1 underline text-blue-500")}
+              >
+                {shop.email ?? "email@example.com"}
+              </Text>
+            </TouchableOpacity>
+
             <TouchableOpacity
               activeOpacity={0.5}
               onPress={() => {

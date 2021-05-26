@@ -10,7 +10,7 @@ import {
   View,
 } from "react-native";
 import { Icon, Input, Avatar, Button } from "react-native-elements";
-import tailwind, { create } from "tailwind-rn";
+import tailwind from "tailwind-rn";
 import { auth, db, storage, firebase } from "../lib/firebase";
 import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from "expo-image-manipulator";
@@ -228,7 +228,7 @@ const CarwashSignup: React.FC<SignupProps> = () => {
 
     if (!result.cancelled) {
       if (resize) {
-        const { uri } = await resizePhoto(result.uri, [224, 224]);
+        const { uri } = await resizePhoto(result.uri, [512, 512]);
         setPhoto(uri);
       } else {
         setPhoto(result.uri);
@@ -252,7 +252,7 @@ const CarwashSignup: React.FC<SignupProps> = () => {
 
     if (!result.cancelled) {
       if (resize) {
-        const { uri } = await resizePhoto(result.uri, [224, 224]);
+        const { uri } = await resizePhoto(result.uri, [512, 512]);
         setPhoto(uri);
       } else {
         setPhoto(result.uri);

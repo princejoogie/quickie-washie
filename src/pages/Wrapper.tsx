@@ -92,16 +92,16 @@ const Wrapper: React.FC = () => {
               }}
             />
             <Stack.Screen
+              name="ShopWrapper"
+              component={ShopWrapper}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
               name="UserOwnedCars"
               component={UserOwnedCarsWrapper}
               options={{
                 headerShown: false,
               }}
-            />
-            <Stack.Screen
-              name="ShopWrapper"
-              component={ShopWrapper}
-              options={{ headerShown: false }}
             />
             <Stack.Screen
               name="UserHistory"

@@ -16,3 +16,27 @@ interface CarProp {
   id: string;
   plateNumber: string;
 }
+
+interface ShopProps {
+  city:
+    | "Caloocan"
+    | "Las Piñas"
+    | "Makati"
+    | "Marikina"
+    | "Muntinlupa"
+    | "Navotas"
+    | "Parañaque"
+    | "Pasay"
+    | "Pateros"
+    | "Quezon City"
+    | "San Juan"
+    | "Taguig"
+    | "Valenzuela";
+  email: string;
+  fullName: string;
+  location: LocType;
+  phoneNumber: string;
+  permitURL?: string | undefined;
+  photoURL?: string | undefined;
+  shopName: string;
+}

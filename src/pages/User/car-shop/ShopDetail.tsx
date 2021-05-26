@@ -27,10 +27,13 @@ const ShopDetail: React.FC = () => {
         }}
         activeOpacity={0.5}
         style={tailwind(
-          "absolute z-50 bottom-2 inset-x-2 p-2 bg-green-500 rounded items-center justify-center"
+          "flex flex-row absolute z-50 bottom-2 inset-x-2 p-2 bg-green-500 rounded items-center justify-center"
         )}
       >
         <Text style={tailwind("text-white rounded")}>Book an Appointment</Text>
+        <View style={tailwind("absolute right-2")}>
+          <Icon name="arrow-right" type="feather" color="#ffffff" />
+        </View>
       </TouchableOpacity>
 
       <ScrollView>
@@ -84,7 +87,6 @@ const ShopDetail: React.FC = () => {
           </View>
         </View>
         <View style={tailwind("p-4")}>
-          <Text>Services</Text>
           <View
             style={tailwind(
               "w-full flex flex-row items-center justify-between"
@@ -129,6 +131,10 @@ const ShopDetail: React.FC = () => {
                 }}
               />
             </MapView>
+          </View>
+
+          <View style={tailwind("mt-4")}>
+            <Text>Choose a Service</Text>
           </View>
         </View>
         <View style={tailwind("w-full h-20")} />

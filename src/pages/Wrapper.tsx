@@ -9,7 +9,12 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { DatabaseContext } from "../contexts/DatabaseContext";
 import { auth } from "../lib/firebase";
 import { AdminHome, ShopDetailsApproval } from "./admin";
-import { CarwashHome } from "./carwash";
+import {
+  CarwashHome,
+  Feedbacks,
+  ShopAppointments,
+  ShopReports,
+} from "./carwash";
 import {
   UserAppointments,
   UserHistory,
@@ -19,6 +24,7 @@ import {
 } from "./user";
 import { Loading, ViewPhoto } from "../components";
 import ShopWrapper from "./user/car-shop/ShopWrapper";
+import ServicesWrapper from "./carwash/ServicesWrapper";
 
 const Stack = createStackNavigator();
 
@@ -80,6 +86,26 @@ const Wrapper: React.FC = () => {
                 ),
                 headerRightContainerStyle: tailwind("mr-2"),
               }}
+            />
+            <Stack.Screen
+              name="ShopReports"
+              component={ShopReports}
+              options={{ headerTitle: "Reports" }}
+            />
+            <Stack.Screen
+              name="ShopFeedbacks"
+              component={Feedbacks}
+              options={{ headerTitle: "Feedbacks" }}
+            />
+            <Stack.Screen
+              name="ShopAppointments"
+              component={ShopAppointments}
+              options={{ headerTitle: "Appointments" }}
+            />
+            <Stack.Screen
+              name="ShopServicesWrapper"
+              component={ServicesWrapper}
+              options={{ headerTitle: "Services" }}
             />
           </>
         ) : (

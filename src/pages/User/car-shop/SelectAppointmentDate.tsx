@@ -10,6 +10,7 @@ import {
 import DateTimePicker from "@react-native-community/datetimepicker";
 import tailwind from "tailwind-rn";
 import { DAYS, MONTHS } from "../../../constants";
+import { Icon } from "react-native-elements";
 
 const SelectAppointmentDate: React.FC = () => {
   const [date, setDate] = useState(new Date());
@@ -37,6 +38,18 @@ const SelectAppointmentDate: React.FC = () => {
     showMode("time");
   };
 
+  const getFinalDate = () => {
+    return new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+      time.getHours(),
+      time.getMinutes(),
+      time.getSeconds(),
+      time.getMilliseconds()
+    );
+  };
+
   const formatTime = () => {
     let _hours = time.getHours().toString();
     if (_hours.length <= 1) _hours = "0" + _hours;
@@ -54,13 +67,19 @@ const SelectAppointmentDate: React.FC = () => {
   return (
     <View style={tailwind("flex flex-1")}>
       <TouchableOpacity
-        onPress={() => {}}
+        onPress={() => {
+          console.log(getFinalDate().toLocaleDateString());
+          console.log(getFinalDate().toLocaleTimeString());
+        }}
         activeOpacity={0.5}
         style={tailwind(
-          "absolute z-50 bottom-2 inset-x-2 p-2 bg-green-500 rounded items-center justify-center"
+          "flex flex-row absolute z-50 bottom-2 inset-x-2 p-2 bg-green-500 rounded items-center justify-center"
         )}
       >
         <Text style={tailwind("text-white rounded")}>Choose a Vehicle</Text>
+        <View style={tailwind("absolute right-2")}>
+          <Icon name="arrow-right" type="feather" color="#ffffff" />
+        </View>
       </TouchableOpacity>
 
       <ScrollView style={tailwind("flex flex-1 p-4")}>
@@ -76,7 +95,7 @@ const SelectAppointmentDate: React.FC = () => {
             minimumDate={new Date()}
             value={mode === "date" ? date : time}
             mode={mode}
-            is24Hour={true}
+            is24Hour={false}
             display="spinner"
             onChange={onChange}
           />

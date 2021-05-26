@@ -13,7 +13,7 @@ import { CarwashHome } from "./carwash";
 import {
   UserAppointments,
   UserHistory,
-  UserOwnedCars,
+  UserOwnedCarsWrapper,
   UserHome,
   UProfile,
 } from "./user";
@@ -92,9 +92,9 @@ const Wrapper: React.FC = () => {
             />
             <Stack.Screen
               name="UserOwnedCars"
-              component={UserOwnedCars}
+              component={UserOwnedCarsWrapper}
               options={{
-                headerTitle: "Owned Cars",
+                headerShown: false,
               }}
             />
             <Stack.Screen

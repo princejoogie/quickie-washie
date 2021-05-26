@@ -24,7 +24,16 @@ export const DatabaseProvider: React.FC = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const authSubscriber = auth.onAuthStateChanged(setUser);
+    const authSubscriber = auth.onAuthStateChanged((user) => {
+      setLoading(() => true);
+      setUser(user);
+      if (!user) {
+        setData(undefined);
+        setPrivilege("USER");
+        setLoading(() => false);
+      }
+    });
+
     return () => {
       authSubscriber();
     };
@@ -32,9 +41,9 @@ export const DatabaseProvider: React.FC = ({ children }) => {
 
   useEffect(() => {
     let dataSub = () => {};
-    setLoading(() => true);
 
     if (user) {
+      setLoading(() => true);
       dataSub = db
         .collection("users")
         .doc(user.uid)
@@ -46,10 +55,6 @@ export const DatabaseProvider: React.FC = ({ children }) => {
           setPrivilege(_privilege);
           setLoading(() => false);
         });
-    } else {
-      setData(undefined);
-      setPrivilege("USER");
-      setLoading(() => false);
     }
 
     return () => {

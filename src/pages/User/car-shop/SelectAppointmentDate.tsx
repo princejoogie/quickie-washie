@@ -74,7 +74,7 @@ const SelectAppointmentDate: React.FC = () => {
         {show && (
           <DateTimePicker
             minimumDate={new Date()}
-            value={date}
+            value={mode === "date" ? date : time}
             mode={mode}
             is24Hour={true}
             display="spinner"

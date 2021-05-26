@@ -1,3 +1,4 @@
+import { useRoute } from "@react-navigation/core";
 import React, { useContext, useState } from "react";
 import {
   ActivityIndicator,
@@ -14,7 +15,7 @@ import tailwind from "tailwind-rn";
 import { SHADOW_SM } from "../../../constants";
 import { DatabaseContext } from "../../../contexts/DatabaseContext";
 import { db } from "../../../lib/firebase";
-import { CarType } from "../../../types/data-types";
+import { CarProp, CarType } from "../../../types/data-types";
 
 interface CarItemProps {
   type: CarType;
@@ -49,12 +50,20 @@ const CarItem: React.FC<CarItemProps> = ({ type, setType, checked }) => {
   );
 };
 
-const SelectCarType: React.FC = ({ navigation }: any) => {
+const UpdateCar: React.FC = ({ navigation }: any) => {
+  const route = useRoute();
+  const { car } = route.params as { car: CarProp };
   const { user } = useContext(DatabaseContext);
-  const [type, setType] = useState<CarType>("Hatchback / Sedan");
-  const [plateNo, setPlatNo] = useState("");
+  const initType = car.type;
+  const initPlate = car.plateNumber;
+  const [type, setType] = useState<CarType>(car.type);
+  const [plateNo, setPlatNo] = useState(car.plateNumber);
   const [loading, setLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
+
+  const isSame = () => {
+    return initType === type && initPlate === plateNo;
+  };
 
   return (
     <View style={tailwind("flex flex-1")}>
@@ -107,20 +116,18 @@ const SelectCarType: React.FC = ({ navigation }: any) => {
           )}
 
           <TouchableOpacity
-            disabled={loading}
+            disabled={isSame()}
             activeOpacity={0.7}
             onPress={async () => {
-              if (plateNo) {
+              if (plateNo && !isSame()) {
                 setHasError(() => false);
                 setLoading(() => true);
                 await db
                   .collection("users")
                   .doc(user?.uid)
                   .collection("cars")
-                  .add({
-                    type,
-                    plateNumber: plateNo,
-                  });
+                  .doc(car.id)
+                  .update({ type, plateNumber: plateNo });
                 setLoading(() => false);
                 navigation.popToTop();
               } else {
@@ -130,13 +137,15 @@ const SelectCarType: React.FC = ({ navigation }: any) => {
               }
             }}
             style={tailwind(
-              "p-2 rounded items-center justify-center bg-blue-500 mt-4"
+              `p-2 rounded items-center justify-center mt-4 ${
+                isSame() ? "bg-gray-300" : "bg-blue-500"
+              }`
             )}
           >
             {loading ? (
               <ActivityIndicator color="#FFFF" size="small" />
             ) : (
-              <Text style={tailwind("text-white")}>Confirm</Text>
+              <Text style={tailwind("text-white")}>Update</Text>
             )}
           </TouchableOpacity>
         </KeyboardAvoidingView>
@@ -145,4 +154,4 @@ const SelectCarType: React.FC = ({ navigation }: any) => {
   );
 };
 
-export default SelectCarType;
+export default UpdateCar;

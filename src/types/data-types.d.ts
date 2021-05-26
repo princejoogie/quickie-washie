@@ -10,3 +10,9 @@ export type CarType =
   | "Hatchback / Sedan"
   | "Jeep / SUV"
   | "Motorcycle / Scooter";
+
+interface CarProp {
+  type: CarType;
+  id: string;
+  plateNumber: string;
+}

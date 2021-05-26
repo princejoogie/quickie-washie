@@ -12,7 +12,6 @@ import tailwind from "tailwind-rn";
 import { Divider } from "../../components";
 import { DatabaseContext } from "../../contexts/DatabaseContext";
 import { auth, firebase } from "../../lib/firebase";
-import * as Location from "expo-location";
 import { SHADOW_SM } from "../../constants";
 import { AdminContext } from "../../contexts/Admin/AdminContext";
 
@@ -21,10 +20,12 @@ interface Item {
 }
 
 const CarwashItem: React.FC<Item> = ({ shop }) => {
+  const navigation = useNavigation();
+
   return (
     <TouchableOpacity
       onPress={() => {
-        // navigation.navigate("ShopDetailsApproval", { shop });
+        navigation.navigate("ShopWrapper", { shop });
       }}
       activeOpacity={0.7}
       style={[
@@ -71,10 +72,10 @@ const Home: React.FC = () => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    (async () => {
-      await Location.requestForegroundPermissionsAsync();
-      await Location.requestBackgroundPermissionsAsync();
-    })();
+    // (async () => {
+    //   await Location.requestForegroundPermissionsAsync();
+    //   await Location.requestBackgroundPermissionsAsync();
+    // })();
 
     navigation.setOptions({
       headerRight: () => (

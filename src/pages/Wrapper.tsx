@@ -18,6 +18,7 @@ import {
   UProfile,
 } from "./user";
 import { Loading, ViewPhoto } from "../components";
+import { ShopWrapper } from "./user/car-shop";
 
 const Stack = createStackNavigator();
 
@@ -96,6 +97,11 @@ const Wrapper: React.FC = () => {
               options={{
                 headerShown: false,
               }}
+            />
+            <Stack.Screen
+              name="ShopWrapper"
+              component={ShopWrapper}
+              options={{ headerShown: false }}
             />
             <Stack.Screen
               name="UserHistory"

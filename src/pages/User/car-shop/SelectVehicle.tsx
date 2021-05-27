@@ -1,10 +1,14 @@
 import React from "react";
-import { View } from "react-native";
+import { Text, View } from "react-native";
 
 interface SelectVehicleProps {}
 
 const SelectVehicle: React.FC<SelectVehicleProps> = () => {
-  return <View></View>;
+  return (
+    <View>
+      <Text>Select Vehicle</Text>
+    </View>
+  );
 };
 
 export default SelectVehicle;

@@ -11,12 +11,13 @@ import { Avatar, Icon, SearchBar } from "react-native-elements";
 import tailwind from "tailwind-rn";
 import { Divider, Spacer } from "../../components";
 import { DatabaseContext } from "../../contexts/DatabaseContext";
-import { auth, firebase } from "../../lib/firebase";
+import { auth } from "../../lib/firebase";
 import { SHADOW_SM } from "../../constants";
 import { AdminContext } from "../../contexts/Admin/AdminContext";
+import { ShopProps } from "../../types/data-types";
 
 interface Item {
-  shop: firebase.firestore.DocumentData;
+  shop: ShopProps;
 }
 
 const CarwashItem: React.FC<Item> = ({ shop }) => {
@@ -41,8 +42,9 @@ const CarwashItem: React.FC<Item> = ({ shop }) => {
         <View style={tailwind("flex w-full flex-row mt-2")}>
           <Avatar
             rounded
+            containerStyle={tailwind("bg-gray-300")}
             size="medium"
-            source={{ uri: shop.photoURL }}
+            source={shop.photoURL ? { uri: shop.photoURL } : undefined}
             icon={{ type: "feather", name: "image" }}
           />
 
@@ -181,7 +183,7 @@ const Home: React.FC = () => {
         </Text>
 
         {approvedShops.map((shop) => (
-          <CarwashItem key={shop.id} shop={shop} />
+          <CarwashItem key={shop.id} shop={shop as ShopProps} />
         ))}
       </View>
 

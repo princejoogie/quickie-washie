@@ -18,6 +18,7 @@ interface CarProp {
 }
 
 interface ShopProps {
+  id: string;
   city:
     | "Caloocan"
     | "Las Piñas"

@@ -3,7 +3,7 @@ import React, { useContext, useEffect } from "react";
 import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { Avatar, Icon } from "react-native-elements";
 import tailwind from "tailwind-rn";
-import { Divider } from "../../components";
+import { Divider, Spacer } from "../../components";
 import { PendingCarwashList } from "../../components/admin";
 import { AdminContext } from "../../contexts/Admin/AdminContext";
 import { DatabaseContext } from "../../contexts/DatabaseContext";
@@ -121,6 +121,8 @@ const AdminHome: React.FC<HomeProps> = () => {
       <Divider />
 
       <PendingCarwashList />
+
+      <Spacer />
     </ScrollView>
   );
 };

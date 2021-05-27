@@ -3,7 +3,8 @@ import React from "react";
 import { View, ScrollView, Text, TouchableOpacity, Alert } from "react-native";
 import { Avatar } from "react-native-elements";
 import tailwind from "tailwind-rn";
-import { db, firebase } from "../../lib/firebase";
+import { db } from "../../lib/firebase";
+import { ShopProps } from "../../types/data-types";
 
 interface DeetItemProps {
   title: string;
@@ -27,7 +28,7 @@ const DeetItem: React.FC<DeetItemProps> = ({
 const ShopDetailsApproval: React.FC = () => {
   const route = useRoute();
   const navigation = useNavigation();
-  const { shop } = route.params as { shop: firebase.firestore.DocumentData };
+  const { shop } = route.params as { shop: ShopProps };
 
   return (
     <ScrollView style={tailwind("flex flex-1")}>
@@ -35,8 +36,9 @@ const ShopDetailsApproval: React.FC = () => {
         <View style={tailwind("flex flex-row")}>
           <Avatar
             rounded
+            containerStyle={tailwind("bg-gray-300")}
             size="xlarge"
-            source={{ uri: shop.photoURL }}
+            source={shop.photoURL ? { uri: shop.photoURL } : undefined}
             icon={{ type: "feather", name: "image" }}
           />
 

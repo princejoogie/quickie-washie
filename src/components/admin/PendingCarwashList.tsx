@@ -13,7 +13,6 @@ interface Item {
 
 const CarwashItem: React.FC<Item> = ({ shop }) => {
   const navigation = useNavigation();
-  console.log(shop);
 
   return (
     <TouchableOpacity

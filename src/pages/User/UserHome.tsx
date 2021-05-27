@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { Avatar, Icon, SearchBar } from "react-native-elements";
 import tailwind from "tailwind-rn";
-import { Divider } from "../../components";
+import { Divider, Spacer } from "../../components";
 import { DatabaseContext } from "../../contexts/DatabaseContext";
 import { auth, firebase } from "../../lib/firebase";
 import { SHADOW_SM } from "../../constants";
@@ -184,6 +184,8 @@ const Home: React.FC = () => {
           <CarwashItem key={shop.id} shop={shop} />
         ))}
       </View>
+
+      <Spacer />
     </ScrollView>
   );
 };

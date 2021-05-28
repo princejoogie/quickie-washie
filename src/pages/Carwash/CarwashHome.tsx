@@ -1,5 +1,5 @@
 import { useNavigation } from "@react-navigation/core";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import {
   ActivityIndicator,
   ScrollView,
@@ -12,12 +12,34 @@ import tailwind from "tailwind-rn";
 import { Divider, ForReview } from "../../components";
 import { WIDTH } from "../../constants";
 import { DatabaseContext } from "../../contexts/DatabaseContext";
+import { auth } from "../../lib/firebase";
 
 interface CarwashHomeProps {}
 
 const CarwashHome: React.FC<CarwashHomeProps> = () => {
   const { data } = useContext(DatabaseContext);
   const navigation = useNavigation();
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity onPress={() => auth.signOut()}>
+          <Icon name="logout" />
+        </TouchableOpacity>
+      ),
+      headerRightContainerStyle: tailwind("mr-2"),
+      headerLeft: () => (
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate("CProfile", { data });
+          }}
+        >
+          <Icon name="user" type="feather" />
+        </TouchableOpacity>
+      ),
+      headerLeftContainerStyle: tailwind("ml-2"),
+    });
+  }, []);
 
   if (!data) {
     return (

@@ -8,23 +8,24 @@ import { Icon } from "react-native-elements";
 import { createStackNavigator } from "@react-navigation/stack";
 import { DatabaseContext } from "../contexts/DatabaseContext";
 import { auth } from "../lib/firebase";
-import { AdminHome, ShopDetailsApproval } from "./admin";
+import { AdminHome, ShopDetailsApproval } from "./Admin";
 import {
   CarwashHome,
+  CProfile,
   Feedbacks,
   ShopAppointments,
   ShopReports,
-} from "./carwash";
+} from "./Carwash";
 import {
   UserAppointments,
   UserHistory,
   UserOwnedCarsWrapper,
   UserHome,
   UProfile,
-} from "./user";
+} from "./User";
 import { Loading, ViewPhoto } from "../components";
-import ShopWrapper from "./user/car-shop/ShopWrapper";
-import ServicesWrapper from "./carwash/ServicesWrapper";
+import ShopWrapper from "./User/car-shop/ShopWrapper";
+import ServicesWrapper from "./Carwash/ServicesWrapper";
 
 const Stack = createStackNavigator();
 
@@ -56,12 +57,6 @@ const Wrapper: React.FC = () => {
               component={AdminHome}
               options={{
                 headerTitle: "Admin",
-                headerRight: () => (
-                  <TouchableOpacity onPress={() => auth.signOut()}>
-                    <Icon name="logout" />
-                  </TouchableOpacity>
-                ),
-                headerRightContainerStyle: tailwind("mr-2"),
               }}
             />
             <Stack.Screen
@@ -78,14 +73,13 @@ const Wrapper: React.FC = () => {
               name="CarwashHome"
               component={CarwashHome}
               options={{
-                headerTitle: "Home",
-                headerRight: () => (
-                  <TouchableOpacity onPress={() => auth.signOut()}>
-                    <Icon name="logout" />
-                  </TouchableOpacity>
-                ),
-                headerRightContainerStyle: tailwind("mr-2"),
+                headerTitle: "Carwash Shop",
               }}
+            />
+            <Stack.Screen
+              name="CProfile"
+              component={CProfile}
+              options={{ headerTitle: "Profile" }}
             />
             <Stack.Screen
               name="ShopReports"

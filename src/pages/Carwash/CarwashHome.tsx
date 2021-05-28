@@ -31,7 +31,7 @@ const CarwashHome: React.FC<CarwashHomeProps> = () => {
       headerLeft: () => (
         <TouchableOpacity
           onPress={() => {
-            navigation.navigate("CProfile", { data });
+            navigation.navigate("EditProfile");
           }}
         >
           <Icon name="user" type="feather" />

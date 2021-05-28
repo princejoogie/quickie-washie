@@ -16,14 +16,22 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.quickie.washie"
+      "bundleIdentifier": "com.quickie.washie",
+      "config": {
+        "googleMapsApiKey": "AIzaSyCvYhab17YX5UJqsgUZr4l1n2kjhJzuxUs"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.quickie.washie"
+      "package": "com.quickie.washie",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyCvYhab17YX5UJqsgUZr4l1n2kjhJzuxUs"
+        }
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"

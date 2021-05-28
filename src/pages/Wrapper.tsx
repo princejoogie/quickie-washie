@@ -1,13 +1,9 @@
 import React, { useContext } from "react";
-import tailwind from "tailwind-rn";
-import { TouchableOpacity } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
-import { CarwashSignup, Login, Signup } from "./";
+import { CarwashSignup, EditProfile, Login, Signup } from "./";
 import { StatusBar } from "expo-status-bar";
-import { Icon } from "react-native-elements";
 import { createStackNavigator } from "@react-navigation/stack";
 import { DatabaseContext } from "../contexts/DatabaseContext";
-import { auth } from "../lib/firebase";
 import { AdminHome, ShopDetailsApproval } from "./Admin";
 import {
   CarwashHome,
@@ -21,7 +17,6 @@ import {
   UserHistory,
   UserOwnedCarsWrapper,
   UserHome,
-  UProfile,
 } from "./User";
 import { Loading, ViewPhoto } from "../components";
 import ShopWrapper from "./User/car-shop/ShopWrapper";
@@ -137,19 +132,17 @@ const Wrapper: React.FC = () => {
                 headerTitle: "Appointments",
               }}
             />
-            <Stack.Screen
-              name="UserProfile"
-              component={UProfile}
-              options={{
-                headerTitle: "Edit Profile",
-              }}
-            />
           </>
         )}
         <Stack.Screen
           name="ViewPhoto"
           component={ViewPhoto}
           options={{ headerTitle: "View Photo" }}
+        />
+        <Stack.Screen
+          name="EditProfile"
+          component={EditProfile}
+          options={{ headerTitle: "Edit Profile" }}
         />
       </Stack.Navigator>
     </NavigationContainer>

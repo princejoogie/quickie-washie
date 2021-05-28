@@ -28,7 +28,7 @@ const AdminHome: React.FC<HomeProps> = () => {
       headerLeft: () => (
         <TouchableOpacity
           onPress={() => {
-            Alert.alert("Profile Page", `Hi, ${data?.fullName ?? "User"}`);
+            navigation.navigate("EditProfile");
           }}
         >
           <Icon name="user" type="feather" />

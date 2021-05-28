@@ -9,7 +9,7 @@ import {
   View,
 } from "react-native";
 import { Avatar, Icon } from "react-native-elements";
-import MapView, { Marker } from "react-native-maps";
+import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import tailwind from "tailwind-rn";
 import { WIDTH } from "../../../constants";
 import { ShopProps } from "../../../types/data-types";
@@ -116,6 +116,7 @@ const ShopDetail: React.FC = () => {
             )}
           >
             <MapView
+              provider={PROVIDER_GOOGLE}
               initialRegion={{
                 latitude: shop.location.latitude,
                 longitude: shop.location.longitude,

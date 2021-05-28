@@ -74,11 +74,6 @@ const Home: React.FC = () => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    // (async () => {
-    //   await Location.requestForegroundPermissionsAsync();
-    //   await Location.requestBackgroundPermissionsAsync();
-    // })();
-
     navigation.setOptions({
       headerRight: () => (
         <TouchableOpacity onPress={() => auth.signOut()}>
@@ -89,7 +84,7 @@ const Home: React.FC = () => {
       headerLeft: () => (
         <TouchableOpacity
           onPress={() => {
-            navigation.navigate("UserProfile", { data });
+            navigation.navigate("EditProfile");
           }}
         >
           <Icon name="user" type="feather" />

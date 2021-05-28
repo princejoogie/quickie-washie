@@ -17,8 +17,16 @@ interface CarProp {
   plateNumber: string;
 }
 
-interface ShopProps {
+interface User {
   id: string;
+  email: string;
+  fullName: string;
+  phoneNumber: string;
+  photoURL?: string;
+  privilege: Privilege;
+}
+
+interface ShopProps extends User {
   city:
     | "Caloocan"
     | "Las Piñas"
@@ -33,11 +41,7 @@ interface ShopProps {
     | "San Juan"
     | "Taguig"
     | "Valenzuela";
-  email: string;
-  fullName: string;
   location: LocType;
-  phoneNumber: string;
   permitURL?: string | undefined;
-  photoURL?: string | undefined;
   shopName: string;
 }

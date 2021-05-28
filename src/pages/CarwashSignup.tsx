@@ -15,7 +15,7 @@ import { auth, db, storage, firebase } from "../lib/firebase";
 import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from "expo-image-manipulator";
 import * as Location from "expo-location";
-import MapView, { Marker } from "react-native-maps";
+import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { CITIES, WIDTH } from "../constants";
 import { useNavigation } from "@react-navigation/core";
 import { Picker } from "@react-native-picker/picker";
@@ -345,6 +345,7 @@ const CarwashSignup: React.FC<SignupProps> = () => {
             )}
           >
             <MapView
+              provider={PROVIDER_GOOGLE}
               initialRegion={{
                 latitude: location.latitude,
                 longitude: location.longitude,

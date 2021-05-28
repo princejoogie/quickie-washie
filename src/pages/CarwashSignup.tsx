@@ -166,7 +166,7 @@ const CarwashSignup: React.FC<SignupProps> = () => {
         xhr.send(null);
       });
 
-      const ref = storage.ref(`shops/${user?.uid}/shop_logo.jpg`);
+      const ref = storage.ref(`users/${user?.uid}/profile_picture.jpg`);
       const snapshot = ref.put(blob);
       const snap = await snapshot;
       const url = await snap.ref.getDownloadURL();

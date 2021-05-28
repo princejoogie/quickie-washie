@@ -13,11 +13,11 @@ import { Divider, ForReview } from "../../components";
 import { WIDTH } from "../../constants";
 import { DatabaseContext } from "../../contexts/DatabaseContext";
 import { auth } from "../../lib/firebase";
+import { ShopProps } from "../../types/data-types";
 
-interface CarwashHomeProps {}
-
-const CarwashHome: React.FC<CarwashHomeProps> = () => {
-  const { data } = useContext(DatabaseContext);
+const CarwashHome: React.FC = () => {
+  const { data: oldData } = useContext(DatabaseContext);
+  const data = oldData as ShopProps;
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -31,7 +31,7 @@ const CarwashHome: React.FC<CarwashHomeProps> = () => {
       headerLeft: () => (
         <TouchableOpacity
           onPress={() => {
-            navigation.navigate("EditProfile");
+            navigation.navigate("CProfile");
           }}
         >
           <Icon name="user" type="feather" />
@@ -52,7 +52,9 @@ const CarwashHome: React.FC<CarwashHomeProps> = () => {
   if (data.approved) {
     return (
       <ScrollView style={tailwind("flex flex-1")}>
-        <View style={tailwind("w-full flex flex-row bg-gray-200 p-4")}>
+        <View
+          style={tailwind("w-full flex items-center flex-row bg-gray-200 p-4")}
+        >
           <Avatar
             size="large"
             containerStyle={tailwind("bg-gray-300")}
@@ -62,8 +64,8 @@ const CarwashHome: React.FC<CarwashHomeProps> = () => {
           />
 
           <View style={tailwind("ml-4 flex justify-center flex-1")}>
-            <Text numberOfLines={1} style={tailwind("text-lg")}>
-              {data?.fullName ?? "Full Name"}
+            <Text numberOfLines={2} style={tailwind("text-lg")}>
+              {data?.shopName ?? "Full Name"}
             </Text>
             <Text numberOfLines={1} style={tailwind("text-gray-500")}>
               {data?.email ?? "email@example.com"}

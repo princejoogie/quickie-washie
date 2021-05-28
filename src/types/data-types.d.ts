@@ -1,5 +1,20 @@
 export type Privilege = "ADMIN" | "USER" | "CARWASH_OWNER";
 
+export type NCRCity =
+  | "Caloocan"
+  | "Las Piñas"
+  | "Makati"
+  | "Marikina"
+  | "Muntinlupa"
+  | "Navotas"
+  | "Parañaque"
+  | "Pasay"
+  | "Pateros"
+  | "Quezon City"
+  | "San Juan"
+  | "Taguig"
+  | "Valenzuela";
+
 export type LocType = {
   latitude: number;
   longitude: number;
@@ -27,21 +42,9 @@ interface User {
 }
 
 interface ShopProps extends User {
-  city:
-    | "Caloocan"
-    | "Las Piñas"
-    | "Makati"
-    | "Marikina"
-    | "Muntinlupa"
-    | "Navotas"
-    | "Parañaque"
-    | "Pasay"
-    | "Pateros"
-    | "Quezon City"
-    | "San Juan"
-    | "Taguig"
-    | "Valenzuela";
+  city: NCRCity;
   location: LocType;
   permitURL?: string | undefined;
   shopName: string;
+  approved: boolean;
 }

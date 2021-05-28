@@ -74,7 +74,7 @@ const Wrapper: React.FC = () => {
             <Stack.Screen
               name="CProfile"
               component={CProfile}
-              options={{ headerTitle: "Profile" }}
+              options={{ headerTitle: "Edit Profile" }}
             />
             <Stack.Screen
               name="ShopReports"

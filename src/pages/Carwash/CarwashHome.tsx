@@ -70,12 +70,21 @@ const CarwashHome: React.FC = () => {
             <Text numberOfLines={1} style={tailwind("text-gray-500")}>
               {data?.email ?? "email@example.com"}
             </Text>
-            <Text
-              numberOfLines={1}
-              style={tailwind("mt-1 text-xs text-gray-500")}
-            >
-              {data?.phoneNumber ?? "phone"}
-            </Text>
+            <View style={tailwind("flex flex-row items-center")}>
+              <Text
+                numberOfLines={1}
+                style={tailwind("mt-1 text-xs text-gray-500")}
+              >
+                {data?.phoneNumber ?? "phone"}
+              </Text>
+              <Text style={tailwind("mx-2 text-lg text-gray-500")}>{"|"}</Text>
+              <Text
+                numberOfLines={1}
+                style={tailwind("mt-1 text-xs text-gray-500")}
+              >
+                {data?.city ?? "phone"}
+              </Text>
+            </View>
           </View>
         </View>
 

@@ -16,6 +16,8 @@ import * as ImageManipulator from "expo-image-manipulator";
 import { ShopProps } from "../../types/data-types";
 import { DatabaseContext } from "../../contexts/DatabaseContext";
 import { db, storage } from "../../lib/firebase";
+import { Picker } from "@react-native-picker/picker";
+import { CITIES } from "../../constants";
 
 const CProfile: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { user, data: oldData } = useContext(DatabaseContext);
@@ -33,16 +35,17 @@ const CProfile: React.FC<{ navigation: any }> = ({ navigation }) => {
     if (fullName === data.fullName) t++;
     if (phoneNumber === data.phoneNumber) t++;
     if (shopName === data.shopName) t++;
+    if (city === data.city) t++;
     if (image) {
       setSame(false);
       return;
     }
-    setSame(t === 3);
+    setSame(t === 4);
   };
 
   useEffect(() => {
     handleChange();
-  }, [fullName, phoneNumber, shopName, image]);
+  }, [fullName, phoneNumber, shopName, city, image]);
 
   const pickImage = async () => {
     await ImagePicker.requestCameraPermissionsAsync();
@@ -72,6 +75,7 @@ const CProfile: React.FC<{ navigation: any }> = ({ navigation }) => {
     if (user) {
       setLoading(() => true);
       await db.collection("users").doc(user.uid).update({
+        city,
         shopName: shopName.trim(),
         fullName: fullName.trim(),
         phoneNumber: phoneNumber.trim(),
@@ -140,6 +144,23 @@ const CProfile: React.FC<{ navigation: any }> = ({ navigation }) => {
             "mt-1 rounded border border-gray-300 px-2 bg-white h-10"
           )}
         />
+
+        <Text style={tailwind("mt-2 text-xs text-gray-600")}>City</Text>
+        <View
+          style={tailwind(
+            "mt-1 justify-center rounded border border-gray-300 px-2 bg-white h-10"
+          )}
+        >
+          <Picker
+            itemStyle={{ fontSize: 14 }}
+            selectedValue={city}
+            onValueChange={(val) => setCity(val)}
+          >
+            {CITIES.map((city) => (
+              <Picker.Item key={city} label={city} value={city} />
+            ))}
+          </Picker>
+        </View>
 
         <Text style={tailwind("mt-2 text-xs text-gray-600")}>Full Name</Text>
         <TextInput

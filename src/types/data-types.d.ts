@@ -9,7 +9,7 @@ export type NCRCity =
   | "Navotas"
   | "Parañaque"
   | "Pasay"
-  | "Pateros"
+  | "Peateros"
   | "Quezon City"
   | "San Juan"
   | "Taguig"
@@ -47,4 +47,11 @@ interface ShopProps extends User {
   permitURL?: string | undefined;
   shopName: string;
   approved: boolean;
+}
+
+interface Service {
+  id: string;
+  name: string;
+  priceRange: string;
+  description: string;
 }

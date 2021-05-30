@@ -92,23 +92,29 @@ const ShopDetail: React.FC = () => {
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              activeOpacity={0.5}
-              onPress={() => {
-                if (Platform.OS === "android") {
-                  Linking.openURL(`tel:${shop.phoneNumber}`);
-                } else {
-                  Linking.openURL(`telprompt:${shop.phoneNumber}`);
-                }
-              }}
-            >
-              <Text
-                numberOfLines={1}
-                style={tailwind("mt-1 text-xs underline text-blue-500")}
+            <View style={tailwind("flex flex-row items-center")}>
+              <TouchableOpacity
+                activeOpacity={0.5}
+                onPress={() => {
+                  if (Platform.OS === "android") {
+                    Linking.openURL(`tel:${shop.phoneNumber}`);
+                  } else {
+                    Linking.openURL(`telprompt:${shop.phoneNumber}`);
+                  }
+                }}
               >
-                {shop.phoneNumber ?? "phone"}
-              </Text>
-            </TouchableOpacity>
+                <Text
+                  numberOfLines={1}
+                  style={tailwind("mt-1 text-xs underline text-blue-500")}
+                >
+                  {shop.phoneNumber ?? "phone"}
+                </Text>
+              </TouchableOpacity>
+
+              <Text style={tailwind("mx-2 text-gray-600")}>|</Text>
+
+              <Text style={tailwind("text-xs text-gray-600")}>{shop.city}</Text>
+            </View>
           </View>
         </View>
         <View style={tailwind("p-4")}>
@@ -199,7 +205,10 @@ const ServiceItem: React.FC<ServiceProps> = ({
         setSelectedService(service.id);
       }}
       activeOpacity={0.7}
-      style={[tailwind("flex flex-row p-2 bg-white mt-2"), { ...SHADOW_SM }]}
+      style={[
+        tailwind("flex flex-row p-2 bg-white mt-2 rounded"),
+        { ...SHADOW_SM },
+      ]}
     >
       <View style={tailwind("items-center justify-center")}>
         {selectedService === service.id ? (

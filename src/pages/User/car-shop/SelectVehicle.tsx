@@ -144,7 +144,10 @@ const CarItem: React.FC<ItemProp> = ({ car, selectedCar, setSelectedCar }) => {
         setSelectedCar(car.id);
       }}
       activeOpacity={0.7}
-      style={[tailwind("flex flex-row p-2 bg-white mt-2"), { ...SHADOW_SM }]}
+      style={[
+        tailwind("flex flex-row p-2 bg-white mt-2 rounded"),
+        { ...SHADOW_SM },
+      ]}
     >
       <View style={tailwind("items-center justify-center")}>
         {selectedCar === car.id ? (

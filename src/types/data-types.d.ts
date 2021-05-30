@@ -1,3 +1,4 @@
+import { firebase } from "../lib/firebase";
 export type Privilege = "ADMIN" | "USER" | "CARWASH_OWNER";
 
 export type NCRCity =
@@ -54,4 +55,16 @@ interface Service {
   name: string;
   priceRange: string;
   description: string;
+}
+
+type AppointmentStatus = "ON-GOING" | "FINISHED" | "CANCELLED";
+interface Appointment {
+  id: string;
+  shopID: string;
+  userID: string;
+  service: Service;
+  appointmentDate: string;
+  vehicle: CarProp;
+  status: AppointmentStatus;
+  timestamp: any;
 }

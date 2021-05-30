@@ -1,7 +1,8 @@
 import { useRoute } from "@react-navigation/core";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   KeyboardAvoidingView,
   ScrollView,
   Text,
@@ -60,6 +61,45 @@ const UpdateCar: React.FC = ({ navigation }: any) => {
   const [plateNo, setPlatNo] = useState(car.plateNumber);
   const [loading, setLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => {
+            Alert.alert(
+              "Confirm",
+              `Are you sure you want to delete ${car.plateNumber}?`,
+              [
+                {
+                  text: "Cancel",
+                  onPress: () => {},
+                  style: "cancel",
+                },
+                {
+                  text: "OK",
+                  onPress: async () => {
+                    setLoading(() => true);
+                    await db
+                      .collection("users")
+                      .doc(user?.uid)
+                      .collection("cars")
+                      .doc(car.id)
+                      .delete();
+                    setLoading(() => false);
+                    navigation.popToTop();
+                  },
+                },
+              ]
+            );
+          }}
+        >
+          <Icon name="delete-outline" />
+        </TouchableOpacity>
+      ),
+      headerRightContainerStyle: tailwind("mr-2"),
+    });
+  }, []);
 
   const isSame = () => {
     return initType === type && initPlate === plateNo;

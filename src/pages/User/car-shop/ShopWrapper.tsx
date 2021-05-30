@@ -1,6 +1,11 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
-import { SelectAppointmentDate, SelectVehicle, ShopDetail } from ".";
+import {
+  AppointmentSummary,
+  SelectAppointmentDate,
+  SelectVehicle,
+  ShopDetail,
+} from ".";
 import { firebase } from "../../../lib/firebase";
 import { useRoute } from "@react-navigation/core";
 
@@ -30,6 +35,11 @@ const ShopWrapper: React.FC = () => {
         name="SelectVehicle"
         component={SelectVehicle}
         options={{ headerTitle: "Choose a Vehicle" }}
+      />
+      <ShopStack.Screen
+        name="AppointmentSummary"
+        component={AppointmentSummary}
+        options={{ headerTitle: "Summary" }}
       />
     </ShopStack.Navigator>
   );

@@ -60,9 +60,13 @@ interface ServiceProps {
 }
 
 const ServiceItem: React.FC<ServiceProps> = ({ service }) => {
+  const navigation = useNavigation();
+
   return (
     <TouchableOpacity
-      onPress={() => {}}
+      onPress={() => {
+        navigation.navigate("UpdateService", { service });
+      }}
       activeOpacity={0.7}
       style={[tailwind("flex flex-row p-2 bg-white mt-2"), { ...SHADOW_SM }]}
     >

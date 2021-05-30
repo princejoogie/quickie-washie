@@ -1,23 +1,60 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
   Platform,
   ScrollView,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import tailwind from "tailwind-rn";
-import { DAYS, MONTHS } from "../../../constants";
 import { Icon } from "react-native-elements";
-import { useNavigation } from "@react-navigation/core";
+import { useRoute } from "@react-navigation/core";
+import { Service, ShopProps } from "../../../types/data-types";
+import { formatAppointmentDate } from "../../../lib/helpers";
 
-const SelectAppointmentDate: React.FC = () => {
-  const navigation = useNavigation();
+const SelectAppointmentDate: React.FC = ({ navigation }: any) => {
+  const route = useRoute();
+  const { service, shop } = route.params as {
+    shop: ShopProps;
+    service: Service;
+  };
   const [date, setDate] = useState(new Date());
   const [time, setTime] = useState(new Date());
   const [mode, setMode] = useState<"time" | "date">("date");
   const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => {
+            Alert.alert(
+              "Confirm",
+              "Are you sure you want to discard changes?",
+              [
+                {
+                  text: "Cancel",
+                  onPress: () => {},
+                  style: "cancel",
+                },
+                {
+                  text: "OK",
+                  onPress: () => {
+                    navigation.popToTop();
+                  },
+                },
+              ]
+            );
+          }}
+        >
+          <Icon name="close" type="ion" />
+        </TouchableOpacity>
+      ),
+      headerRightContainerStyle: tailwind("mr-2"),
+    });
+  }, []);
 
   const onChange = (_: any, selectedDate: any) => {
     const currentDate = selectedDate || date;
@@ -51,27 +88,6 @@ const SelectAppointmentDate: React.FC = () => {
     );
   };
 
-  const formatTime = (time: any) => {
-    time = time
-      .toString()
-      .match(/^([01]\d|2[0-3])(:)([0-5]\d)(:[0-5]\d)?$/) || [time];
-
-    if (time.length > 1) {
-      time = time.slice(1);
-      time[5] = +time[0] < 12 ? "AM" : "PM";
-      time[0] = +time[0] % 12 || 12;
-    }
-
-    time.splice(3, 2);
-    return time.join("");
-  };
-
-  const formatAppointmentDate = () => {
-    return `${DAYS[date.getDay()]}, ${date.getDate()} ${
-      MONTHS[date.getMonth()]
-    } ${date.getFullYear()} at ${formatTime(time.toLocaleTimeString())}`;
-  };
-
   return (
     <View style={tailwind("flex flex-1")}>
       <View style={tailwind("absolute z-50 bottom-2 inset-x-2")}>
@@ -82,14 +98,18 @@ const SelectAppointmentDate: React.FC = () => {
           <Text
             style={tailwind("px-2 py-1 text-center bg-gray-300 rounded mt-1")}
           >
-            {formatAppointmentDate()}{" "}
+            {formatAppointmentDate(date, time)}{" "}
           </Text>
         </View>
 
         <TouchableOpacity
           onPress={() => {
             const appointmentDate = getFinalDate().toISOString();
-            navigation.navigate("SelectVehicle", { appointmentDate });
+            navigation.navigate("SelectVehicle", {
+              appointmentDate,
+              service,
+              shop,
+            });
           }}
           activeOpacity={0.5}
           style={tailwind(
@@ -103,8 +123,10 @@ const SelectAppointmentDate: React.FC = () => {
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={tailwind("flex flex-1 p-4")}>
-        <View style={tailwind("flex items-center justify-center p-2")}>
+      <ScrollView style={tailwind("flex flex-1")}>
+        <View
+          style={tailwind("flex items-center justify-center px-4 pt-4 pb-2")}
+        >
           <TouchableOpacity onPress={showDatepicker}>
             <Text style={tailwind("text-blue-600 uppercase")}>
               Choose a Date
@@ -112,7 +134,7 @@ const SelectAppointmentDate: React.FC = () => {
           </TouchableOpacity>
         </View>
 
-        <View style={tailwind("flex items-center justify-center p-2")}>
+        <View style={tailwind("flex items-center justify-center px-4 py-2")}>
           <TouchableOpacity onPress={showTimepicker}>
             <Text style={tailwind("text-blue-600 uppercase")}>Choose Time</Text>
           </TouchableOpacity>

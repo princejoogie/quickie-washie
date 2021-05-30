@@ -1,5 +1,5 @@
 import { useNavigation, useRoute } from "@react-navigation/core";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Linking,
   Platform,
@@ -11,23 +11,45 @@ import {
 import { Avatar, Icon } from "react-native-elements";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import tailwind from "tailwind-rn";
-import { WIDTH } from "../../../constants";
-import { ShopProps } from "../../../types/data-types";
+import { Spacer } from "../../../components";
+import { SHADOW_SM, WIDTH } from "../../../constants";
+import { db } from "../../../lib/firebase";
+import { Service, ShopProps } from "../../../types/data-types";
 
 const ShopDetail: React.FC = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const { shop } = route.params as { shop: ShopProps };
+  const [services, setServices] = useState<Service[]>([]);
+  const [selectedService, setSelectedService] = useState("");
+
+  useEffect(() => {
+    const servicesSubscriber = db
+      .collection("users")
+      .doc(shop.id)
+      .collection("services")
+      .onSnapshot((snapshot) => {
+        setServices(
+          snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Service))
+        );
+      });
+
+    return servicesSubscriber;
+  }, []);
 
   return (
     <View style={tailwind("flex flex-1")}>
       <TouchableOpacity
+        disabled={!selectedService}
         onPress={() => {
-          navigation.navigate("SelectAppointmentDate", { shop });
+          const service = services.find((e) => e.id === selectedService);
+          navigation.navigate("SelectAppointmentDate", { shop, service });
         }}
         activeOpacity={0.5}
         style={tailwind(
-          "flex flex-row absolute z-50 bottom-2 inset-x-2 p-2 bg-green-500 rounded items-center justify-center"
+          `flex flex-row absolute z-50 bottom-2 inset-x-2 p-2 rounded items-center justify-center ${
+            !selectedService ? "bg-gray-300" : "bg-green-500"
+          }`
         )}
       >
         <Text style={tailwind("text-white rounded")}>Book an Appointment</Text>
@@ -136,11 +158,66 @@ const ShopDetail: React.FC = () => {
 
           <View style={tailwind("mt-4")}>
             <Text>Choose a Service</Text>
+            {services.map((service) => (
+              <ServiceItem
+                key={service.id}
+                {...{ service, selectedService, setSelectedService }}
+              />
+            ))}
           </View>
         </View>
-        <View style={tailwind("w-full h-20")} />
+
+        <Spacer />
       </ScrollView>
     </View>
+  );
+};
+interface ServiceProps {
+  service: Service;
+  selectedService: string;
+  setSelectedService: React.Dispatch<React.SetStateAction<string>>;
+}
+
+const ServiceItem: React.FC<ServiceProps> = ({
+  service,
+  selectedService,
+  setSelectedService,
+}) => {
+  return (
+    <TouchableOpacity
+      onPress={() => {
+        setSelectedService(service.id);
+      }}
+      activeOpacity={0.7}
+      style={[tailwind("flex flex-row p-2 bg-white mt-2"), { ...SHADOW_SM }]}
+    >
+      <View style={tailwind("items-center justify-center")}>
+        {selectedService === service.id ? (
+          <Icon
+            name="dot-circle-o"
+            type="font-awesome"
+            size={20}
+            color="#6366F1"
+          />
+        ) : (
+          <Icon name="circle-o" type="font-awesome" size={20} color="#D1D5DB" />
+        )}
+      </View>
+
+      <View style={tailwind("flex-1 ml-2")}>
+        <Text style={tailwind("font-bold")}>{service.name}</Text>
+        <View style={tailwind("items-center flex flex-row")}>
+          <Text style={tailwind("text-xs text-gray-500")}>Price Range: </Text>
+          <Text style={tailwind("text-xs")}>{service.priceRange}</Text>
+        </View>
+        <View style={tailwind("items-center flex flex-row")}>
+          <Text style={tailwind("text-xs text-gray-500")}>Description: </Text>
+          <Text numberOfLines={2} style={tailwind("text-xs")}>
+            {service.description}
+          </Text>
+        </View>
+      </View>
+    </TouchableOpacity>
   );
 };
 

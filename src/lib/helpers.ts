@@ -1,3 +1,4 @@
+import { DAYS, MONTHS } from "../constants";
 import { LocType } from "../types/data-types";
 
 export const getLocDistance = (loc1: LocType, loc2: LocType) => {
@@ -18,3 +19,24 @@ export const getLocDistance = (loc1: LocType, loc2: LocType) => {
 function deg2rad(deg: number) {
   return deg * (Math.PI / 180);
 }
+
+export const formatTime = (time: any) => {
+  time = time.toString().match(/^([01]\d|2[0-3])(:)([0-5]\d)(:[0-5]\d)?$/) || [
+    time,
+  ];
+
+  if (time.length > 1) {
+    time = time.slice(1);
+    time[5] = +time[0] < 12 ? "AM" : "PM";
+    time[0] = +time[0] % 12 || 12;
+  }
+
+  time.splice(3, 2);
+  return time.join("");
+};
+
+export const formatAppointmentDate = (date: Date, time: Date) => {
+  return `${DAYS[date.getDay()]}, ${date.getDate()} ${
+    MONTHS[date.getMonth()]
+  } ${date.getFullYear()} at ${formatTime(time.toLocaleTimeString())}`;
+};

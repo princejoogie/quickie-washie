@@ -1,6 +1,6 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
-import { AddService, Services } from "./services";
+import { AddService, Services, UpdateService } from "./services";
 
 const Stack = createStackNavigator();
 
@@ -17,6 +17,12 @@ const ServicesWrapper: React.FC = () => {
         name="AddService"
         component={AddService}
         options={{ headerTitle: "Add a Service" }}
+      />
+
+      <Stack.Screen
+        name="UpdateService"
+        component={UpdateService}
+        options={{ headerTitle: "Update Service" }}
       />
     </Stack.Navigator>
   );

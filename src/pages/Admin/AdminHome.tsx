@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/core";
 import React, { useContext, useEffect } from "react";
-import { Alert, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { Avatar, Icon } from "react-native-elements";
 import tailwind from "tailwind-rn";
 import { Divider, Spacer } from "../../components";

@@ -38,10 +38,15 @@ const SelectVehicle: React.FC<SelectVehicleProps> = ({ navigation }: any) => {
       .onSnapshot((snapshot) => {
         setLoading(() => false);
         if (snapshot.docs.length <= 0) setNoCars(true);
-        else setSelectedCar(snapshot.docs[0].id);
-        setCars(
-          snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as CarProp))
-        );
+        else {
+          setNoCars(() => false);
+          setSelectedCar(snapshot.docs[0].id);
+          setCars(
+            snapshot.docs.map(
+              (doc) => ({ id: doc.id, ...doc.data() } as CarProp)
+            )
+          );
+        }
       });
 
     navigation.setOptions({

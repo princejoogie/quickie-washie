@@ -1,6 +1,12 @@
 import { useNavigation } from "@react-navigation/core";
 import React, { useContext, useEffect, useState } from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { Icon } from "react-native-elements";
 import tailwind from "tailwind-rn";
 import { SHADOW_SM } from "../../../constants";
@@ -16,6 +22,8 @@ const OwnedCars: React.FC = () => {
   const { user } = useContext(DatabaseContext);
   const navigation = useNavigation();
   const [cars, setCars] = useState<CarProp[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [noData, setNoData] = useState(false);
 
   useEffect(() => {
     const listener = db
@@ -23,15 +31,24 @@ const OwnedCars: React.FC = () => {
       .doc(user?.uid)
       .collection("cars")
       .onSnapshot((snapshot) => {
-        setCars(
-          snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as CarProp))
-        );
+        setLoading(() => false);
+        if (snapshot.docs.length <= 0) setNoData(() => true);
+        else {
+          setNoData(() => false);
+          setCars(
+            snapshot.docs.map(
+              (doc) => ({ id: doc.id, ...doc.data() } as CarProp)
+            )
+          );
+        }
       });
 
     return listener;
   }, []);
 
-  return (
+  return loading ? (
+    <ActivityIndicator style={tailwind("mt-4")} size="small" color="#000" />
+  ) : (
     <View style={tailwind("flex flex-1")}>
       <TouchableOpacity
         onPress={() => {
@@ -44,13 +61,18 @@ const OwnedCars: React.FC = () => {
       >
         <Icon name="plus" type="feather" color="#FFFFFF" />
       </TouchableOpacity>
-      <ScrollView style={tailwind("flex flex-1")}>
-        <View style={tailwind("px-4 pt-2 pb-4")}>
-          {cars.map((car) => (
-            <CarItem key={car.id} car={car} />
-          ))}
-        </View>
-      </ScrollView>
+
+      {noData ? (
+        <Text style={tailwind("text-center mt-4")}>No Cars</Text>
+      ) : (
+        <ScrollView style={tailwind("flex flex-1")}>
+          <View style={tailwind("px-4 pt-2 pb-4")}>
+            {cars.map((car) => (
+              <CarItem key={car.id} car={car} />
+            ))}
+          </View>
+        </ScrollView>
+      )}
     </View>
   );
 };

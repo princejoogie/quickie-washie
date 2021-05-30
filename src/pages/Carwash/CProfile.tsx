@@ -176,7 +176,12 @@ const CProfile: React.FC<{ navigation: any }> = ({ navigation }) => {
         <TextInput
           editable={!loading}
           value={phoneNumber}
-          onChangeText={setPhoneNumber}
+          keyboardType="number-pad"
+          maxLength={13}
+          onChangeText={(e) => {
+            if (e.length < 3) setPhoneNumber("+63");
+            else setPhoneNumber(e);
+          }}
           style={tailwind(
             "mt-1 rounded border border-gray-300 px-2 bg-white h-10"
           )}

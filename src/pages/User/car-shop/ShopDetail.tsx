@@ -1,6 +1,7 @@
 import { useNavigation, useRoute } from "@react-navigation/core";
 import React, { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Linking,
   Platform,
   ScrollView,
@@ -22,6 +23,7 @@ const ShopDetail: React.FC = () => {
   const { shop } = route.params as { shop: ShopProps };
   const [services, setServices] = useState<Service[]>([]);
   const [selectedService, setSelectedService] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const servicesSubscriber = db
@@ -29,6 +31,7 @@ const ShopDetail: React.FC = () => {
       .doc(shop.id)
       .collection("services")
       .onSnapshot((snapshot) => {
+        setLoading(() => false);
         setServices(
           snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Service))
         );
@@ -158,6 +161,13 @@ const ShopDetail: React.FC = () => {
 
           <View style={tailwind("mt-4")}>
             <Text>Choose a Service</Text>
+            {loading && (
+              <ActivityIndicator
+                style={tailwind("mt-2")}
+                size="small"
+                color="#000"
+              />
+            )}
             {services.map((service) => (
               <ServiceItem
                 key={service.id}

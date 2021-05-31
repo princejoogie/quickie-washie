@@ -19,7 +19,7 @@ import { AppoitmentItem, ShopProps } from "../../../types/data-types";
 const AppointmentInfo: React.FC = () => {
   const route = useRoute();
   const {
-    appointment: { service, appointmentDate, shopID, vehicle: car, id, status },
+    appointment: { service, appointmentDate, shopID, vehicle: car, id },
   } = route.params as { appointment: AppoitmentItem };
   const date = new Date(appointmentDate);
   const [shop, setShop] = useState<ShopProps>();

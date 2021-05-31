@@ -12,12 +12,7 @@ import {
   ShopAppointments,
   ShopReports,
 } from "./Carwash";
-import {
-  UserAppointments,
-  UserHistory,
-  UserOwnedCarsWrapper,
-  UserHome,
-} from "./User";
+import { UserHistory, UserOwnedCarsWrapper, UserHome } from "./User";
 import { Loading, ViewPhoto } from "../components";
 import ShopWrapper from "./User/car-shop/ShopWrapper";
 import ServicesWrapper from "./Carwash/ServicesWrapper";

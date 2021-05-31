@@ -1,24 +1,25 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
-import { Appointments, AppointmentItem } from "./";
+import { ShopAppointmentItem, ShopAppointments } from "./appointments/";
 
 const Stack = createStackNavigator();
 
-const AppointmentWrapper: React.FC = () => {
+const ShopAppointmentWrapper: React.FC = () => {
   return (
     <Stack.Navigator
       initialRouteName="Appointments"
       screenOptions={{ headerTitleAlign: "center" }}
     >
-      <Stack.Screen name="Appointments" component={Appointments} />
-
+      <Stack.Screen name="Appointments" component={ShopAppointments} />
       <Stack.Screen
         name="AppointmentItem"
-        component={AppointmentItem}
-        options={{ headerTitle: "Appointment Item" }}
+        component={ShopAppointmentItem}
+        options={{
+          headerTitle: "Appointment Item",
+        }}
       />
     </Stack.Navigator>
   );
 };
 
-export default AppointmentWrapper;
+export default ShopAppointmentWrapper;

@@ -1,6 +1,6 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
-import { History, HistoryItem } from ".";
+import { History, HistoryItem } from "./history";
 
 const Stack = createStackNavigator();
 

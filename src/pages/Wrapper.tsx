@@ -8,11 +8,11 @@ import { AdminHome, ShopDetailsApproval } from "./Admin";
 import { CarwashHome, CProfile, Feedbacks, ShopReports } from "./Carwash";
 import { UserOwnedCarsWrapper, UserHome } from "./User";
 import { Loading, ViewPhoto } from "../components";
-import ShopWrapper from "./User/car-shop/ShopWrapper";
+import ShopWrapper from "./User/ShopWrapper";
 import ServicesWrapper from "./Carwash/ServicesWrapper";
-import AppointmentWrapper from "./User/appointments/AppointmentWrapper";
-import HistoryWrapper from "./User/history/HistoryWrapper";
-import ShopAppointmentWrapper from "./Carwash/appointments/ShopAppointmentWrapper";
+import AppointmentWrapper from "./User/AppointmentWrapper";
+import HistoryWrapper from "./User/HistoryWrapper";
+import ShopAppointmentWrapper from "./Carwash/ShopAppointmentWrapper";
 
 const Stack = createStackNavigator();
 

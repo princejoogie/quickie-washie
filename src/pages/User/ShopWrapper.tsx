@@ -5,8 +5,8 @@ import {
   SelectAppointmentDate,
   SelectVehicle,
   ShopDetail,
-} from ".";
-import { firebase } from "../../../lib/firebase";
+} from "./car-shop";
+import { firebase } from "../../lib/firebase";
 import { useRoute } from "@react-navigation/core";
 
 const ShopStack = createStackNavigator();

@@ -138,7 +138,7 @@ const Item: React.FC<ItemProp> = ({ apt }) => {
         <Text
           style={tailwind(
             `text-xs ${
-              apt.status === "CANCELLED" ? "text-red-500" : "text-green-500"
+              apt.status === "CANCELLED" ? "text-red-500" : "text-green-700"
             }`
           )}
         >

@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { Avatar, Icon } from "react-native-elements";
+import { Avatar } from "react-native-elements";
 import tailwind from "tailwind-rn";
 import { SHADOW_SM } from "../../../constants";
 import { db } from "../../../lib/firebase";
@@ -25,7 +25,7 @@ const ShopAppointmentItem: React.FC = ({ navigation }: any) => {
   const date = new Date(appointmentDate);
   const [userData, setUserData] = useState<User>();
   const [loading, setLoading] = useState(true);
-  const [deleting, setDeleting] = useState(false);
+  const ongoing = status === "ON-GOING";
 
   useEffect(() => {
     db.collection("users")
@@ -35,44 +35,6 @@ const ShopAppointmentItem: React.FC = ({ navigation }: any) => {
         setLoading(false);
         setUserData({ id: snapshot.id, ...snapshot.data() } as User);
       });
-
-    navigation.setOptions({
-      headerRight: () => (
-        <TouchableOpacity
-          onPress={() => {
-            Alert.alert(
-              "Cancel Appointment?",
-              "Are you sure you want to continue? This action cannot be undone.",
-              [
-                {
-                  text: "Cancel",
-                  onPress: () => {},
-                  style: "cancel",
-                },
-                {
-                  text: "OK",
-                  onPress: async () => {
-                    setDeleting(() => true);
-                    await db.collection("appointments").doc(id).update({
-                      status: "CANCELLED",
-                    });
-                    setDeleting(() => false);
-                    navigation.popToTop();
-                  },
-                },
-              ]
-            );
-          }}
-        >
-          {deleting ? (
-            <ActivityIndicator size="small" color="#000" />
-          ) : (
-            <Icon name="close" type="ion" />
-          )}
-        </TouchableOpacity>
-      ),
-      headerRightContainerStyle: tailwind("mr-2"),
-    });
   }, []);
 
   return (
@@ -218,29 +180,77 @@ const ShopAppointmentItem: React.FC = ({ navigation }: any) => {
           </View>
         </View>
 
-        <View style={tailwind("flex flex-row w-full mt-4")}>
-          <TouchableOpacity
-            style={[
-              tailwind(
-                "flex-1 flex-shrink-0 mr-1 py-2 px-4 bg-gray-200 rounded items-center justify-center"
-              ),
-              { ...SHADOW_SM },
-            ]}
-          >
-            <Text>Cancel</Text>
-          </TouchableOpacity>
+        {ongoing && (
+          <View style={tailwind("flex flex-row w-full mt-4")}>
+            <TouchableOpacity
+              onPress={() => {
+                Alert.alert(
+                  "Cancel Appointment?",
+                  "Are you sure you want to continue? This action cannot be undone.",
+                  [
+                    {
+                      text: "Cancel",
+                      onPress: () => {},
+                      style: "cancel",
+                    },
+                    {
+                      text: "OK",
+                      onPress: () => {
+                        db.collection("appointments").doc(id).update({
+                          status: "CANCELLED",
+                        });
+                        navigation.popToTop();
+                      },
+                    },
+                  ]
+                );
+              }}
+              activeOpacity={0.6}
+              style={[
+                tailwind(
+                  "flex-1 flex-shrink-0 mr-1 py-2 px-4 rounded items-center justify-center bg-gray-300"
+                ),
+                { ...SHADOW_SM },
+              ]}
+            >
+              <Text>Cancel</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[
-              tailwind(
-                "flex-1 flex-shrink-0 ml-1 py-2 px-4 bg-green-500 rounded items-center justify-center"
-              ),
-              { ...SHADOW_SM },
-            ]}
-          >
-            <Text style={tailwind("text-white text-center")}>Finished</Text>
-          </TouchableOpacity>
-        </View>
+            <TouchableOpacity
+              onPress={() => {
+                Alert.alert(
+                  "Mark as Finished?",
+                  "This appoint has been finished.",
+                  [
+                    {
+                      text: "Cancel",
+                      onPress: () => {},
+                      style: "cancel",
+                    },
+                    {
+                      text: "OK",
+                      onPress: () => {
+                        db.collection("appointments").doc(id).update({
+                          status: "FINISHED",
+                        });
+                        navigation.popToTop();
+                      },
+                    },
+                  ]
+                );
+              }}
+              activeOpacity={0.6}
+              style={[
+                tailwind(
+                  "flex-1 flex-shrink-0 ml-1 bg-green-500 py-2 px-4 rounded items-center justify-center"
+                ),
+                { ...SHADOW_SM },
+              ]}
+            >
+              <Text style={tailwind("text-white text-center")}>Finished</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
     </ScrollView>
   );

@@ -78,8 +78,10 @@ const Item: React.FC<ItemProp> = ({ apt }) => {
         { ...SHADOW_SM },
       ]}
     >
-      <View style={tailwind("flex-1")}>
-        <Text style={tailwind("font-bold")}>{apt.service.name}</Text>
+      <View style={tailwind("flex-1 items-start mr-2")}>
+        <Text numberOfLines={2} style={tailwind("flex-1 font-bold text-black")}>
+          {apt.service.name}
+        </Text>
         <View style={tailwind("items-center mt-2 flex flex-row")}>
           <Text style={tailwind("text-xs text-gray-500")}>Vehicle: </Text>
           <Text style={tailwind("text-xs")}>{apt.vehicle.plateNumber}</Text>
@@ -92,7 +94,17 @@ const Item: React.FC<ItemProp> = ({ apt }) => {
         </View>
       </View>
 
-      <View style={tailwind("items-center justify-center")}>
+      <View style={tailwind("items-end justify-between")}>
+        <Text
+          style={tailwind(
+            `text-xs ${
+              apt.status === "CANCELLED" ? "text-red-500" : "text-green-700"
+            }`
+          )}
+        >
+          {apt.status}
+        </Text>
+
         <Icon name="chevron-right" type="feather" color="#4B5563" />
       </View>
     </TouchableOpacity>

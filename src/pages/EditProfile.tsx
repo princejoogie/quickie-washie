@@ -16,6 +16,7 @@ import * as ImageManipulator from "expo-image-manipulator";
 import { User } from "../types/data-types";
 import { DatabaseContext } from "../contexts/DatabaseContext";
 import { db, storage } from "../lib/firebase";
+import { SHADOW_SM } from "../constants";
 
 const EditProfile: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { user, data: oldData } = useContext(DatabaseContext);
@@ -131,9 +132,10 @@ const EditProfile: React.FC<{ navigation: any }> = ({ navigation }) => {
           editable={!loading}
           value={fullName}
           onChangeText={setFullName}
-          style={tailwind(
-            "mt-1 rounded border border-gray-300 px-2 bg-white h-10"
-          )}
+          style={[
+            tailwind("mt-1 rounded px-2 bg-white h-10"),
+            { ...SHADOW_SM },
+          ]}
         />
 
         <Text style={tailwind("mt-2 text-xs text-gray-600")}>Phone Number</Text>
@@ -146,18 +148,20 @@ const EditProfile: React.FC<{ navigation: any }> = ({ navigation }) => {
             if (e.length < 3) setPhoneNumber("+63");
             else setPhoneNumber(e);
           }}
-          style={tailwind(
-            "mt-1 rounded border border-gray-300 px-2 bg-white h-10"
-          )}
+          style={[
+            tailwind("mt-1 rounded px-2 bg-white h-10"),
+            { ...SHADOW_SM },
+          ]}
         />
 
         <Text style={tailwind("mt-2 text-xs text-gray-600")}>
           Email Address
         </Text>
         <View
-          style={tailwind(
-            "flex mt-1 justify-center rounded border border-gray-300 px-2 bg-gray-200 h-10"
-          )}
+          style={[
+            tailwind("flex mt-1 justify-center rounded px-2 bg-gray-200 h-10"),
+            { ...SHADOW_SM },
+          ]}
         >
           <Text>{data.email}</Text>
         </View>

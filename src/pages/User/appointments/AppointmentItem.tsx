@@ -106,7 +106,7 @@ const AppointmentInfo: React.FC = ({ navigation }: any) => {
           shop && (
             <View
               style={[
-                tailwind("bg-white rounded p-2 mt-1 flex-row items-center"),
+                tailwind("bg-white rounded-t p-2 mt-1 flex-row items-center"),
                 { ...SHADOW_SM },
               ]}
             >
@@ -169,6 +169,25 @@ const AppointmentInfo: React.FC = ({ navigation }: any) => {
               </View>
             </View>
           )
+        )}
+
+        {shop && (
+          <TouchableOpacity
+            onPress={() => {
+              Linking.openURL(
+                `https://www.waze.com/ul?ll=${shop.location.latitude}%2C${shop.location.longitude}&navigate=yes&zoom=17`
+              );
+            }}
+            activeOpacity={0.5}
+            style={tailwind(
+              "flex flex-row items-center justify-center bg-blue-500 px-2 py-1 rounded-b"
+            )}
+          >
+            <Text style={tailwind("text-xs mr-2 text-white")}>
+              Open in Waze
+            </Text>
+            <Icon name="waze" type="font-awesome-5" size={18} color="#fff" />
+          </TouchableOpacity>
         )}
 
         <Text style={tailwind("mt-3 text-xs text-gray-600")}>Service Type</Text>

@@ -21,6 +21,7 @@ import {
 import { Loading, ViewPhoto } from "../components";
 import ShopWrapper from "./User/car-shop/ShopWrapper";
 import ServicesWrapper from "./Carwash/ServicesWrapper";
+import AppointmentWrapper from "./User/appointments/AppointmentWrapper";
 
 const Stack = createStackNavigator();
 
@@ -127,9 +128,9 @@ const Wrapper: React.FC = () => {
             />
             <Stack.Screen
               name="UserAppointments"
-              component={UserAppointments}
+              component={AppointmentWrapper}
               options={{
-                headerTitle: "Appointments",
+                headerShown: false,
               }}
             />
           </>

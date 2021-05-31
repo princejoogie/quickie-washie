@@ -1,13 +1,22 @@
 import React, { useContext, useEffect, useState } from "react";
-import { ActivityIndicator, ScrollView, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import tailwind from "tailwind-rn";
-import { SHADOW_SM } from "../../constants";
-import { DatabaseContext } from "../../contexts/DatabaseContext";
-import { db } from "../../lib/firebase";
-import { Appointment } from "../../types/data-types";
+import { SHADOW_SM } from "../../../constants";
+import { DatabaseContext } from "../../../contexts/DatabaseContext";
+import { db } from "../../../lib/firebase";
+import { AppoitmentItem } from "../../../types/data-types";
+import {} from "react-native";
+import { useNavigation } from "@react-navigation/core";
 
 const Appointments: React.FC = () => {
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const navigation = useNavigation();
+  const [appointments, setAppointments] = useState<AppoitmentItem[]>([]);
   const { user } = useContext(DatabaseContext);
   const [loading, setLoading] = useState(true);
   const [noData, setNoData] = useState(false);
@@ -25,7 +34,7 @@ const Appointments: React.FC = () => {
           setNoData(() => false);
           setAppointments(
             snapshot.docs.map(
-              (doc) => ({ id: doc.id, ...doc.data() } as Appointment)
+              (doc) => ({ id: doc.id, ...doc.data() } as AppoitmentItem)
             )
           );
         }
@@ -42,13 +51,16 @@ const Appointments: React.FC = () => {
     <ScrollView>
       <View style={tailwind("px-4 pt-2 pb-4")}>
         {appointments.map((apt) => (
-          <View
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("AppointmentItem", { appointment: apt });
+            }}
             key={apt.id}
             style={[tailwind("p-2 rounded bg-white mt-2"), { ...SHADOW_SM }]}
           >
             <Text>{apt.appointmentDate}</Text>
             <Text>{apt.service.name}</Text>
-          </View>
+          </TouchableOpacity>
         ))}
       </View>
     </ScrollView>

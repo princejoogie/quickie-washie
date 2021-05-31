@@ -68,3 +68,14 @@ interface Appointment {
   status: AppointmentStatus;
   timestamp: any;
 }
+
+interface AppoitmentItem {
+  id: string;
+  appointmentDate: string;
+  service: Service;
+  shopID: string;
+  status: AppointmentStatus;
+  timestamp: any;
+  userID: string;
+  vehicle: CarProp;
+}

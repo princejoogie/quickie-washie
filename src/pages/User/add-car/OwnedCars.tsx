@@ -86,7 +86,10 @@ const CarItem: React.FC<ItemProp> = ({ car }) => {
         navigation.navigate("UpdateCar", { car });
       }}
       activeOpacity={0.7}
-      style={[tailwind("flex flex-row p-2 bg-white mt-2"), { ...SHADOW_SM }]}
+      style={[
+        tailwind("flex flex-row p-2 bg-white mt-2 rounded"),
+        { ...SHADOW_SM },
+      ]}
     >
       <View style={tailwind("flex-1")}>
         <Text style={tailwind("font-bold")}>{car.plateNumber}</Text>

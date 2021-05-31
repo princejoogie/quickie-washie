@@ -1,6 +1,12 @@
 import { useNavigation } from "@react-navigation/core";
 import React, { useContext, useEffect, useState } from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { Icon } from "react-native-elements";
 import tailwind from "tailwind-rn";
 import { Spacer } from "../../../components";
@@ -15,6 +21,8 @@ const Services: React.FC<ServicesProps> = () => {
   const { user } = useContext(DatabaseContext);
   const navigation = useNavigation();
   const [services, setServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [noData, setNoData] = useState(false);
 
   useEffect(() => {
     const servicesSubscriber = db
@@ -22,9 +30,18 @@ const Services: React.FC<ServicesProps> = () => {
       .doc(user?.uid)
       .collection("services")
       .onSnapshot((snapshot) => {
-        setServices(
-          snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Service))
-        );
+        if (snapshot.docs.length <= 0) {
+          setNoData(true);
+          setLoading(false);
+        } else {
+          setNoData(false);
+          setServices(
+            snapshot.docs.map(
+              (doc) => ({ id: doc.id, ...doc.data() } as Service)
+            )
+          );
+          setLoading(false);
+        }
       });
 
     return servicesSubscriber;
@@ -44,11 +61,21 @@ const Services: React.FC<ServicesProps> = () => {
         <Icon name="plus" type="feather" color="#FFFFFF" />
       </TouchableOpacity>
       <ScrollView style={tailwind("flex flex-1")}>
-        <View style={tailwind("px-4 pt-2 pb-4")}>
-          {services.map((service) => (
-            <ServiceItem key={service.id} service={service} />
-          ))}
-        </View>
+        {loading ? (
+          <ActivityIndicator
+            style={tailwind("mt-4")}
+            size="small"
+            color="#000"
+          />
+        ) : noData ? (
+          <Text style={tailwind("text-center mt-4")}>No Services.</Text>
+        ) : (
+          <View style={tailwind("px-4 pt-2 pb-4")}>
+            {services.map((service) => (
+              <ServiceItem key={service.id} service={service} />
+            ))}
+          </View>
+        )}
         <Spacer />
       </ScrollView>
     </View>

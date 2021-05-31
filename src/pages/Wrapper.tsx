@@ -5,19 +5,14 @@ import { StatusBar } from "expo-status-bar";
 import { createStackNavigator } from "@react-navigation/stack";
 import { DatabaseContext } from "../contexts/DatabaseContext";
 import { AdminHome, ShopDetailsApproval } from "./Admin";
-import {
-  CarwashHome,
-  CProfile,
-  Feedbacks,
-  ShopAppointments,
-  ShopReports,
-} from "./Carwash";
-import { UserHistory, UserOwnedCarsWrapper, UserHome } from "./User";
+import { CarwashHome, CProfile, Feedbacks, ShopReports } from "./Carwash";
+import { UserOwnedCarsWrapper, UserHome } from "./User";
 import { Loading, ViewPhoto } from "../components";
 import ShopWrapper from "./User/car-shop/ShopWrapper";
 import ServicesWrapper from "./Carwash/ServicesWrapper";
 import AppointmentWrapper from "./User/appointments/AppointmentWrapper";
 import HistoryWrapper from "./User/history/HistoryWrapper";
+import ShopAppointmentWrapper from "./Carwash/appointments/ShopAppointmentWrapper";
 
 const Stack = createStackNavigator();
 
@@ -85,8 +80,8 @@ const Wrapper: React.FC = () => {
             />
             <Stack.Screen
               name="ShopAppointments"
-              component={ShopAppointments}
-              options={{ headerTitle: "Appointments" }}
+              component={ShopAppointmentWrapper}
+              options={{ headerShown: false }}
             />
             <Stack.Screen
               name="ShopServicesWrapper"

@@ -17,10 +17,10 @@ import { db } from "../../../lib/firebase";
 import { formatAppointmentDate } from "../../../lib/helpers";
 import { AppoitmentItem, ShopProps } from "../../../types/data-types";
 
-const AppointmentInfo: React.FC = ({ navigation }: any) => {
+const HistoryItem: React.FC = ({ navigation }: any) => {
   const route = useRoute();
   const {
-    appointment: { service, appointmentDate, shopID, vehicle: car, id },
+    appointment: { service, appointmentDate, shopID, vehicle: car, id, status },
   } = route.params as { appointment: AppoitmentItem };
   const date = new Date(appointmentDate);
   const [shop, setShop] = useState<ShopProps>();
@@ -41,7 +41,7 @@ const AppointmentInfo: React.FC = ({ navigation }: any) => {
         <TouchableOpacity
           onPress={() => {
             Alert.alert(
-              "Cancel Appointment?",
+              "Delete Item?",
               "Are you sure you want to continue? This action cannot be undone.",
               [
                 {
@@ -53,9 +53,7 @@ const AppointmentInfo: React.FC = ({ navigation }: any) => {
                   text: "OK",
                   onPress: async () => {
                     setDeleting(() => true);
-                    await db.collection("appointments").doc(id).update({
-                      status: "CANCELLED",
-                    });
+                    await db.collection("appointments").doc(id).delete();
                     setDeleting(() => false);
                     navigation.popToTop();
                   },
@@ -78,7 +76,27 @@ const AppointmentInfo: React.FC = ({ navigation }: any) => {
   return (
     <ScrollView style={tailwind("flex-1")}>
       <View style={tailwind("p-4")}>
-        <Text style={tailwind("text-xs text-gray-600")}>Reference Number</Text>
+        <Text style={tailwind("text-xs text-gray-600")}>Status</Text>
+        <View
+          style={[
+            tailwind("bg-white rounded p-2 mt-1 flex-row items-center"),
+            { ...SHADOW_SM },
+          ]}
+        >
+          <Text
+            style={tailwind(
+              `font-bold ${
+                status === "CANCELLED" ? "text-red-500" : "text-green-500"
+              }`
+            )}
+          >
+            {status}
+          </Text>
+        </View>
+
+        <Text style={tailwind("text-xs mt-3 text-gray-600")}>
+          Reference Number
+        </Text>
         <View
           style={[
             tailwind("bg-white rounded p-2 mt-1 flex-row items-center"),
@@ -208,4 +226,4 @@ const AppointmentInfo: React.FC = ({ navigation }: any) => {
   );
 };
 
-export default AppointmentInfo;
+export default HistoryItem;

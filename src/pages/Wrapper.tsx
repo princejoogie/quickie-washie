@@ -17,6 +17,7 @@ import { Loading, ViewPhoto } from "../components";
 import ShopWrapper from "./User/car-shop/ShopWrapper";
 import ServicesWrapper from "./Carwash/ServicesWrapper";
 import AppointmentWrapper from "./User/appointments/AppointmentWrapper";
+import HistoryWrapper from "./User/history/HistoryWrapper";
 
 const Stack = createStackNavigator();
 
@@ -116,9 +117,9 @@ const Wrapper: React.FC = () => {
             />
             <Stack.Screen
               name="UserHistory"
-              component={UserHistory}
+              component={HistoryWrapper}
               options={{
-                headerTitle: "History",
+                headerShown: false,
               }}
             />
             <Stack.Screen

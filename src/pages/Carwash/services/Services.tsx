@@ -68,7 +68,10 @@ const ServiceItem: React.FC<ServiceProps> = ({ service }) => {
         navigation.navigate("UpdateService", { service });
       }}
       activeOpacity={0.7}
-      style={[tailwind("flex flex-row p-2 bg-white mt-2"), { ...SHADOW_SM }]}
+      style={[
+        tailwind("flex flex-row p-2 bg-white mt-2 rounded"),
+        { ...SHADOW_SM },
+      ]}
     >
       <View style={tailwind("flex-1")}>
         <Text style={tailwind("font-bold")}>{service.name}</Text>

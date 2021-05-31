@@ -1,10 +1,10 @@
 import React, { createContext, useEffect, useState } from "react";
-import { db, firebase } from "../../lib/firebase";
-import { Privilege } from "../../types/data-types";
+import { db } from "../../lib/firebase";
+import { Privilege, ShopProps } from "../../types/data-types";
 
 interface Ret {
-  approvedShops: firebase.firestore.DocumentData[];
-  pendingShops: firebase.firestore.DocumentData[];
+  approvedShops: ShopProps[];
+  pendingShops: ShopProps[];
   nCustomer: number;
   nOwner: number;
   nAdmin: number;
@@ -22,12 +22,8 @@ export const AdminProvider: React.FC = ({ children }) => {
   const [nCustomer, setNCustomer] = useState(0);
   const [nOwner, setNOwner] = useState(0);
   const [nAdmin, setNAdmin] = useState(0);
-  const [approvedShops, setApprovedShops] = useState<
-    firebase.firestore.DocumentData[]
-  >([]);
-  const [pendingShops, setPendingShops] = useState<
-    firebase.firestore.DocumentData[]
-  >([]);
+  const [approvedShops, setApprovedShops] = useState<ShopProps[]>([]);
+  const [pendingShops, setPendingShops] = useState<ShopProps[]>([]);
 
   useEffect(() => {
     const _approvedShopSubscriber = db
@@ -36,7 +32,9 @@ export const AdminProvider: React.FC = ({ children }) => {
       .where("approved", "==", true)
       .onSnapshot((snapshot) => {
         setApprovedShops(
-          snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+          snapshot.docs.map(
+            (doc) => ({ id: doc.id, ...doc.data() } as ShopProps)
+          )
         );
       });
 
@@ -46,7 +44,9 @@ export const AdminProvider: React.FC = ({ children }) => {
       .where("approved", "==", false)
       .onSnapshot((snapshot) => {
         setPendingShops(
-          snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+          snapshot.docs.map(
+            (doc) => ({ id: doc.id, ...doc.data() } as ShopProps)
+          )
         );
       });
 

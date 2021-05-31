@@ -10,10 +10,10 @@ import {
 import { Avatar, Icon, SearchBar } from "react-native-elements";
 import tailwind from "tailwind-rn";
 import { Divider, Spacer } from "../../components";
-import { DatabaseContext } from "../../contexts/DatabaseContext";
-import { auth } from "../../lib/firebase";
 import { SHADOW_SM } from "../../constants";
 import { AdminContext } from "../../contexts/Admin/AdminContext";
+import { DatabaseContext } from "../../contexts/DatabaseContext";
+import { auth } from "../../lib/firebase";
 import { ShopProps } from "../../types/data-types";
 
 interface Item {
@@ -70,7 +70,9 @@ const CarwashItem: React.FC<Item> = ({ shop }) => {
 const Home: React.FC = () => {
   const { data } = useContext(DatabaseContext);
   const { approvedShops } = useContext(AdminContext);
+  const [shops, setShops] = useState(approvedShops);
   const [query, setQuery] = useState("");
+  const [noResult, setNoResult] = useState(false);
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -95,7 +97,23 @@ const Home: React.FC = () => {
   }, []);
 
   const searchCarwash = async (text: string) => {
-    console.log({ text });
+    if (!text.trim()) {
+      setNoResult(false);
+      setShops(approvedShops);
+    } else {
+      const _shops = approvedShops.filter((e) => {
+        const _t = text.toUpperCase();
+        const inName = e.shopName.toUpperCase().includes(_t);
+        const inCity = e.city.toUpperCase().includes(_t);
+
+        return inName || inCity;
+      });
+
+      if (_shops.length <= 0) setNoResult(true);
+      else setNoResult(false);
+
+      setShops(() => [..._shops]);
+    }
   };
 
   return (
@@ -161,6 +179,10 @@ const Home: React.FC = () => {
         <SearchBar
           value={query}
           onChangeText={setQuery}
+          onClear={() => {
+            setNoResult(false);
+            setShops(approvedShops);
+          }}
           onSubmitEditing={() => searchCarwash(query)}
           containerStyle={tailwind(
             "bg-transparent border rounded border-gray-400 m-0 p-0"
@@ -177,9 +199,13 @@ const Home: React.FC = () => {
           Carwash Shops Available
         </Text>
 
-        {approvedShops.map((shop) => (
-          <CarwashItem key={shop.id} shop={shop as ShopProps} />
-        ))}
+        {noResult ? (
+          <Text style={tailwind("text-center mt-4")}>No Result.</Text>
+        ) : (
+          shops.map((shop) => (
+            <CarwashItem key={shop.id} shop={shop as ShopProps} />
+          ))
+        )}
       </View>
 
       <Spacer />

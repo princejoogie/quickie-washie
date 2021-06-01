@@ -1,3 +1,4 @@
+import { useNavigation } from "@react-navigation/core";
 import React, { useContext, useEffect, useState } from "react";
 import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 import { Avatar, Icon } from "react-native-elements";
@@ -61,6 +62,7 @@ const QuestionList: React.FC = () => {
 
 const QuestionItem: React.FC<QItemProp> = ({ q, shopID }) => {
   const date = q.timestamp?.toDate() as Date;
+  const navigation = useNavigation();
 
   const deleteQuestion = async () => {
     if (shopID) {
@@ -75,6 +77,9 @@ const QuestionItem: React.FC<QItemProp> = ({ q, shopID }) => {
 
   return (
     <TouchableOpacity
+      onPress={() => {
+        navigation.navigate("AnswerQuestion", { q });
+      }}
       activeOpacity={0.7}
       style={[tailwind("p-2 mt-2 bg-white rounded"), { ...SHADOW_SM }]}
     >
@@ -107,7 +112,7 @@ const QuestionItem: React.FC<QItemProp> = ({ q, shopID }) => {
       {!!q.answer && (
         <View>
           <Text style={tailwind("mt-2 text-gray-600 text-xs")}>Response: </Text>
-          <Text style={tailwind("ml-4 w-full")}>{q.answer}</Text>
+          <Text style={tailwind("ml-4 flex")}>{q.answer}</Text>
         </View>
       )}
     </TouchableOpacity>

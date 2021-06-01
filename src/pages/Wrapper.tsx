@@ -5,7 +5,13 @@ import { StatusBar } from "expo-status-bar";
 import { createStackNavigator } from "@react-navigation/stack";
 import { DatabaseContext } from "../contexts/DatabaseContext";
 import { AdminHome, ShopDetailsApproval } from "./Admin";
-import { CarwashHome, CProfile, Feedbacks, ShopReports } from "./Carwash";
+import {
+  AnswerQuestion,
+  CarwashHome,
+  CProfile,
+  Feedbacks,
+  ShopReports,
+} from "./Carwash";
 import { UserOwnedCarsWrapper, UserHome } from "./User";
 import { Loading, ViewPhoto } from "../components";
 import ShopWrapper from "./User/ShopWrapper";
@@ -62,6 +68,11 @@ const Wrapper: React.FC = () => {
               options={{
                 headerTitle: "Carwash Shop",
               }}
+            />
+            <Stack.Screen
+              name="AnswerQuestion"
+              component={AnswerQuestion}
+              options={{ headerTitle: "Answer Question" }}
             />
             <Stack.Screen
               name="CProfile"

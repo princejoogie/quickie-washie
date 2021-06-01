@@ -167,7 +167,7 @@ const QuestionItem: React.FC<QItemProp> = ({ q, same, shopID }) => {
       {!!q.answer && (
         <View>
           <Text style={tailwind("mt-2 text-gray-600 text-xs")}>Response: </Text>
-          <Text style={tailwind("ml-4 w-full")}>{q.answer}</Text>
+          <Text style={tailwind("ml-4 flex")}>{q.answer}</Text>
         </View>
       )}
     </View>

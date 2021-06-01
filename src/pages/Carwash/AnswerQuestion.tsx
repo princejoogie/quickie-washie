@@ -55,6 +55,7 @@ const AnswerQuestion: React.FC = () => {
             <Text style={tailwind("text-xs text-blue-500")}>Clear</Text>
           </TouchableOpacity>
         </View>
+
         <TextInput
           multiline
           value={answer}

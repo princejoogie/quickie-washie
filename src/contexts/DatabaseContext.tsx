@@ -51,7 +51,7 @@ export const DatabaseProvider: React.FC = ({ children }) => {
           const _data = res.data();
           const _privilege = _data?.privilege ?? "USER";
 
-          setData(_data);
+          setData({ id: res.id, ..._data });
           setPrivilege(_privilege);
           setLoading(() => false);
         });

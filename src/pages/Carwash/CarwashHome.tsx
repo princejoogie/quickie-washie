@@ -10,6 +10,7 @@ import {
 import { Avatar, Icon } from "react-native-elements";
 import tailwind from "tailwind-rn";
 import { Divider, ForReview } from "../../components";
+import QuestionList from "../../components/carwash/CQuestions";
 import { WIDTH } from "../../constants";
 import { DatabaseContext } from "../../contexts/DatabaseContext";
 import { auth } from "../../lib/firebase";
@@ -136,9 +137,7 @@ const CarwashHome: React.FC = () => {
 
         <Divider />
 
-        <View style={tailwind("p-4")}>
-          <Text style={tailwind("text-xs text-gray-600")}>Questions</Text>
-        </View>
+        <QuestionList />
       </ScrollView>
     );
   }

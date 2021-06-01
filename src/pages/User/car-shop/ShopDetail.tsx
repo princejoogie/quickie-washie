@@ -13,6 +13,7 @@ import { Avatar, Icon } from "react-native-elements";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import tailwind from "tailwind-rn";
 import { Spacer } from "../../../components";
+import { FAQs } from "../../../components/user/car-shop";
 import { SHADOW_SM, WIDTH } from "../../../constants";
 import { db } from "../../../lib/firebase";
 import { Service, ShopProps } from "../../../types/data-types";
@@ -42,29 +43,35 @@ const ShopDetail: React.FC = () => {
 
   return (
     <View style={tailwind("flex flex-1")}>
-      <TouchableOpacity
-        disabled={!selectedService}
-        onPress={() => {
-          const service = services.find((e) => e.id === selectedService);
-          navigation.navigate("SelectAppointmentDate", { shop, service });
-        }}
-        activeOpacity={0.5}
-        style={tailwind(
-          `flex flex-row absolute z-50 bottom-2 inset-x-2 p-2 rounded items-center justify-center ${
-            !selectedService ? "bg-gray-300" : "bg-green-500"
-          }`
-        )}
-      >
-        <Text style={tailwind("text-white rounded")}>Book an Appointment</Text>
-        <View style={tailwind("absolute right-2")}>
-          <Icon name="arrow-right" type="feather" color="#ffffff" />
-        </View>
-      </TouchableOpacity>
+      {!!selectedService && (
+        <TouchableOpacity
+          disabled={!selectedService}
+          onPress={() => {
+            const service = services.find((e) => e.id === selectedService);
+            navigation.navigate("SelectAppointmentDate", { shop, service });
+          }}
+          activeOpacity={0.5}
+          style={tailwind(
+            `flex flex-row absolute z-50 bottom-2 inset-x-2 p-2 rounded items-center justify-center ${
+              !selectedService ? "bg-gray-300" : "bg-green-500"
+            }`
+          )}
+        >
+          <Text style={tailwind("text-white rounded")}>
+            Book an Appointment
+          </Text>
+          <View style={tailwind("absolute right-2")}>
+            <Icon name="arrow-right" type="feather" color="#ffffff" />
+          </View>
+        </TouchableOpacity>
+      )}
 
       <ScrollView>
-        <View style={tailwind("w-full flex flex-row bg-gray-200 p-4")}>
+        <View
+          style={tailwind("w-full flex flex-row bg-gray-200 p-4 items-center")}
+        >
           <Avatar
-            size="large"
+            size="medium"
             containerStyle={tailwind("bg-gray-300")}
             rounded
             source={shop?.photoURL ? { uri: shop.photoURL } : undefined}
@@ -72,7 +79,7 @@ const ShopDetail: React.FC = () => {
           />
 
           <View style={tailwind("ml-4 flex items-start justify-center flex-1")}>
-            <Text numberOfLines={1} style={tailwind("text-lg")}>
+            <Text numberOfLines={2} style={tailwind("font-bold")}>
               {shop.shopName ?? "Shop Name"}
             </Text>
 
@@ -86,7 +93,7 @@ const ShopDetail: React.FC = () => {
             >
               <Text
                 numberOfLines={1}
-                style={tailwind("mt-1 underline text-blue-500")}
+                style={tailwind("mt-1 text-xs underline text-blue-500")}
               >
                 {shop.email ?? "email@example.com"}
               </Text>
@@ -123,7 +130,7 @@ const ShopDetail: React.FC = () => {
               "w-full flex flex-row items-center justify-between"
             )}
           >
-            <Text>Location</Text>
+            <Text style={tailwind("text-gray-600")}>Location</Text>
             <TouchableOpacity
               onPress={() => {
                 Linking.openURL(
@@ -166,7 +173,7 @@ const ShopDetail: React.FC = () => {
           </View>
 
           <View style={tailwind("mt-4")}>
-            <Text>Choose a Service</Text>
+            <Text style={tailwind("text-gray-600")}>Choose a Service</Text>
             {loading && (
               <ActivityIndicator
                 style={tailwind("mt-2")}
@@ -181,6 +188,8 @@ const ShopDetail: React.FC = () => {
               />
             ))}
           </View>
+
+          <FAQs shop={shop} />
         </View>
 
         <Spacer />

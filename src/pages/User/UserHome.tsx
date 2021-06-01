@@ -36,7 +36,7 @@ const CarwashItem: React.FC<Item> = ({ shop }) => {
     >
       <View style={tailwind("flex-1")}>
         <View>
-          <Text style={tailwind("font-bold text-lg")}>{shop.shopName}</Text>
+          <Text style={tailwind("font-bold")}>{shop.shopName}</Text>
         </View>
 
         <View style={tailwind("flex w-full flex-row mt-2")}>

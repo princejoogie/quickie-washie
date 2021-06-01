@@ -79,3 +79,15 @@ interface AppoitmentItem {
   userID: string;
   vehicle: CarProp;
 }
+
+interface Question {
+  id: string;
+  userID: string;
+  user: {
+    name: string;
+    photoURL?: string;
+  };
+  question: string;
+  answer: string;
+  timestamp: any;
+}

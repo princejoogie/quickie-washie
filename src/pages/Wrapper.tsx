@@ -4,7 +4,13 @@ import { CarwashSignup, EditProfile, Login, Signup } from "./";
 import { StatusBar } from "expo-status-bar";
 import { createStackNavigator } from "@react-navigation/stack";
 import { DatabaseContext } from "../contexts/DatabaseContext";
-import { AdminHome, ShopDetailsApproval } from "./Admin";
+import {
+  AdminHome,
+  ShopDetailsApproval,
+  ApprovedShopsWrapper,
+  UserApprovalWrapper,
+  UserDeactivationWrapper,
+} from "./Admin";
 import {
   AnswerQuestion,
   CarwashHome,
@@ -57,6 +63,27 @@ const Wrapper: React.FC = () => {
               component={ShopDetailsApproval}
               options={{
                 headerTitle: "Shop Details",
+              }}
+            />
+            <Stack.Screen
+              name="ApprovedShopsWrapper"
+              component={ApprovedShopsWrapper}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="UserApprovalWrapper"
+              component={UserApprovalWrapper}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="UserDeactivationWrapper"
+              component={UserDeactivationWrapper}
+              options={{
+                headerShown: false,
               }}
             />
           </>

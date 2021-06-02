@@ -120,7 +120,6 @@ const EditProfile: React.FC<{ navigation: any }> = ({ navigation }) => {
 
   const deactivate = async () => {
     if (user) {
-      setDeactivating(() => true);
       const appointments = await db
         .collection("appointments")
         .where("userID", "==", user.uid)
@@ -158,9 +157,10 @@ const EditProfile: React.FC<{ navigation: any }> = ({ navigation }) => {
           .doc(car.id)
           .delete();
       });
-      await db.collection("users").doc(user.uid).delete();
+
       if (!!data.licenseURL) await storage.refFromURL(data.licenseURL).delete();
       if (!!data.photoURL) await storage.refFromURL(data.photoURL).delete();
+      await db.collection("users").doc(user.uid).delete();
 
       await auth.currentUser?.delete();
       await auth.signOut();

@@ -10,7 +10,7 @@ export type NCRCity =
   | "Navotas"
   | "Parañaque"
   | "Pasay"
-  | "Peateros"
+  | "Pateros"
   | "Quezon City"
   | "San Juan"
   | "Taguig"

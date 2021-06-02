@@ -129,20 +129,6 @@ const AdminHome: React.FC<HomeProps> = () => {
       <View style={tailwind("py-2 px-6")}>
         <TouchableOpacity
           onPress={() => {
-            navigation.navigate("UserDeactivationWrapper");
-          }}
-          style={tailwind("flex flex-row items-center justify-between")}
-        >
-          <Text>Pending User Deactivation</Text>
-          <Icon name="chevron-right" type="feather" />
-        </TouchableOpacity>
-      </View>
-
-      <Divider />
-
-      <View style={tailwind("py-2 px-6")}>
-        <TouchableOpacity
-          onPress={() => {
             navigation.navigate("ApprovedShopsWrapper");
           }}
           style={tailwind("flex flex-row items-center justify-between")}

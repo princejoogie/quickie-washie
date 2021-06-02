@@ -1,12 +1,15 @@
 import React, { useContext, useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   KeyboardAvoidingView,
+  Modal,
   Platform,
   ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
+  Vibration,
   View,
 } from "react-native";
 import tailwind from "tailwind-rn";
@@ -15,7 +18,7 @@ import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from "expo-image-manipulator";
 import { User } from "../types/data-types";
 import { DatabaseContext } from "../contexts/DatabaseContext";
-import { db, storage } from "../lib/firebase";
+import { auth, db, storage } from "../lib/firebase";
 import { SHADOW_SM } from "../constants";
 
 const EditProfile: React.FC<{ navigation: any }> = ({ navigation }) => {
@@ -26,6 +29,12 @@ const EditProfile: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [image, setImage] = useState<string | undefined>("");
   const [same, setSame] = useState(true);
   const [loading, setLoading] = useState(false);
+
+  // DEACTIVATION VARIABLES
+  const [deactivating, setDeactivating] = useState(false);
+  const [modalShown, setModalShown] = useState(false);
+  const [password, setPassword] = useState("");
+  const [hasError, setHasError] = useState(false);
 
   const handleChange = () => {
     let t = 0;
@@ -109,8 +118,129 @@ const EditProfile: React.FC<{ navigation: any }> = ({ navigation }) => {
     }
   };
 
+  const deactivate = async () => {
+    if (user) {
+      setDeactivating(() => true);
+      const appointments = await db
+        .collection("appointments")
+        .where("userID", "==", user.uid)
+        .get();
+      appointments.forEach(async (apt) => {
+        await db.collection("appointments").doc(apt.id).delete();
+      });
+
+      const shops = await db
+        .collection("users")
+        .where("privilege", "==", "CARWASH_OWNER")
+        .get();
+      shops.forEach(async (shop) => {
+        const shopRef = db.collection("users").doc(shop.id);
+        const questions = await shopRef
+          .collection("questions")
+          .where("userID", "==", user.uid)
+          .get();
+
+        questions.forEach(async (q) => {
+          await shopRef.collection("questions").doc(q.id).delete();
+        });
+      });
+
+      const cars = await db
+        .collection("users")
+        .doc(user.uid)
+        .collection("cars")
+        .get();
+      cars.forEach(async (car) => {
+        await db
+          .collection("users")
+          .doc(user.uid)
+          .collection("cars")
+          .doc(car.id)
+          .delete();
+      });
+      await db.collection("users").doc(user.uid).delete();
+      if (!!data.licenseURL) await storage.refFromURL(data.licenseURL).delete();
+      if (!!data.photoURL) await storage.refFromURL(data.photoURL).delete();
+
+      await auth.currentUser?.delete();
+      await auth.signOut();
+    }
+  };
+
   return (
     <ScrollView style={tailwind("flex flex-1")}>
+      <Modal
+        animationType="slide"
+        transparent={false}
+        visible={modalShown}
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+          setModalShown(!modalShown);
+        }}
+      >
+        <View
+          style={[
+            tailwind("absolute flex-row inset-0 items-center justify-center"),
+            { backgroundColor: "rgba(0,0,0,0.3)" },
+          ]}
+        >
+          <View
+            style={[
+              tailwind("flex-1 mx-4 p-2 bg-white rounded"),
+              { ...SHADOW_SM },
+            ]}
+          >
+            <Text style={tailwind("text-xs text-gray-600")}>
+              Re-enter Password
+            </Text>
+
+            <TextInput
+              editable={!deactivating}
+              value={password}
+              onChangeText={(text) => {
+                setPassword(text);
+                setHasError(() => false);
+              }}
+              style={tailwind("border border-gray-300 rounded mt-1 px-3 py-1")}
+              placeholder="******"
+            />
+
+            {hasError && (
+              <Text style={tailwind("text-xs text-red-500")}>
+                Incorrect Password.
+              </Text>
+            )}
+
+            <TouchableOpacity
+              style={tailwind(
+                "bg-green-400 items-center justify-center mt-4 px-4 py-2 rounded"
+              )}
+              onPress={async () => {
+                setDeactivating(() => true);
+                try {
+                  await auth.signInWithEmailAndPassword(
+                    data.email,
+                    password.trim()
+                  );
+
+                  await deactivate();
+                } catch (err) {
+                  Vibration.vibrate();
+                  setHasError(true);
+                  setDeactivating(() => false);
+                }
+              }}
+            >
+              {deactivating ? (
+                <ActivityIndicator size="small" color="#fff" />
+              ) : (
+                <Text style={tailwind("text-white")}>Confirm</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
       <KeyboardAvoidingView style={tailwind("m-4")}>
         <View style={tailwind("flex items-center justify-center")}>
           <Avatar
@@ -181,6 +311,28 @@ const EditProfile: React.FC<{ navigation: any }> = ({ navigation }) => {
           ) : (
             <Text style={tailwind("text-white")}>Update</Text>
           )}
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          disabled={deactivating}
+          onPress={() => {
+            Alert.alert(
+              "Confirm",
+              "Are you sure you want to deativate your account? This action cannot be undone.",
+              [
+                {
+                  text: "Cancel",
+                },
+                {
+                  text: "OK",
+                  onPress: () => setModalShown(true),
+                },
+              ]
+            );
+          }}
+          style={tailwind("self-center mt-4")}
+        >
+          <Text style={tailwind("text-red-500")}>Deactivate Account</Text>
         </TouchableOpacity>
       </KeyboardAvoidingView>
     </ScrollView>

@@ -9,7 +9,6 @@ import {
   ShopDetailsApproval,
   ApprovedShopsWrapper,
   UserApprovalWrapper,
-  UserDeactivationWrapper,
 } from "./Admin";
 import {
   AnswerQuestion,
@@ -75,13 +74,6 @@ const Wrapper: React.FC = () => {
             <Stack.Screen
               name="UserApprovalWrapper"
               component={UserApprovalWrapper}
-              options={{
-                headerShown: false,
-              }}
-            />
-            <Stack.Screen
-              name="UserDeactivationWrapper"
-              component={UserDeactivationWrapper}
               options={{
                 headerShown: false,
               }}

@@ -79,6 +79,10 @@ const ApprovedHome: React.FC<ApprovedProps> = ({ data }) => {
   const [noResult, setNoResult] = useState(false);
   const navigation = useNavigation();
 
+  useEffect(() => {
+    setShops(() => [...approvedShops]);
+  }, [approvedShops]);
+
   const searchCarwash = async (text: string) => {
     if (!text.trim()) {
       setNoResult(false);

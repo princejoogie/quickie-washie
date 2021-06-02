@@ -40,6 +40,7 @@ interface User {
   fullName: string;
   phoneNumber: string;
   photoURL?: string;
+  licenseURL?: string;
   privilege: Privilege;
 }
 

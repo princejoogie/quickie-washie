@@ -34,6 +34,7 @@ interface CarProp {
 }
 
 interface User {
+  approved: boolean;
   id: string;
   email: string;
   fullName: string;
@@ -47,7 +48,6 @@ interface ShopProps extends User {
   location: LocType;
   permitURL?: string | undefined;
   shopName: string;
-  approved: boolean;
 }
 
 interface Service {

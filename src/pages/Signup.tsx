@@ -5,6 +5,7 @@ import {
   ScrollView,
   Text,
   TextInput,
+  TouchableOpacity,
   Vibration,
   View,
 } from "react-native";
@@ -14,10 +15,17 @@ import tailwind from "tailwind-rn";
 import { auth, db, storage, firebase } from "../lib/firebase";
 import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from "expo-image-manipulator";
+import { useNavigation } from "@react-navigation/core";
 
-interface SignupProps {}
+interface PickImageProps {
+  aspect?: [number, number] | undefined;
+  resize?: boolean;
+  allowsEditing?: boolean;
+  setPhoto: React.Dispatch<React.SetStateAction<string | undefined>>;
+}
 
-const Signup: React.FC<SignupProps> = () => {
+const Signup: React.FC = () => {
+  const navigation = useNavigation();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [number, setNumber] = useState("+63");
@@ -35,10 +43,12 @@ const Signup: React.FC<SignupProps> = () => {
     number: false,
     password: false,
     confirm: false,
+    license: false,
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState<string | undefined>("");
+  const [license, setLicense] = useState<string | undefined>("");
 
   const isValid = () => {
     const _errors = errors;
@@ -57,6 +67,9 @@ const Signup: React.FC<SignupProps> = () => {
     if (confirm.trim() !== password.trim()) _errors.confirm = true;
     else _errors.confirm = false;
 
+    if (!license) _errors.license = true;
+    else _errors.license = false;
+
     let _count = 0;
     Object.keys(_errors).forEach((key) => {
       // @ts-ignore
@@ -73,7 +86,7 @@ const Signup: React.FC<SignupProps> = () => {
       auth
         .createUserWithEmailAndPassword(email.trim(), password.trim())
         .then((user) => {
-          maybeUploadImage(user.user, image);
+          maybeUploadImage(user.user, image, license);
         })
         .catch((error) => {
           setError(error.message);
@@ -87,9 +100,11 @@ const Signup: React.FC<SignupProps> = () => {
 
   const maybeUploadImage = async (
     user: firebase.User | null,
-    image: string | undefined
+    image: string | undefined,
+    license: string | undefined
   ) => {
     await db.collection("users").doc(user?.uid).set({
+      approved: false,
       privilege: "USER",
       fullName: name.trim(),
       email: email.trim(),
@@ -124,20 +139,83 @@ const Signup: React.FC<SignupProps> = () => {
         { merge: true }
       );
     }
+
+    if (license) {
+      const _license =
+        Platform.OS === "ios" ? license.replace("file://", "") : license;
+
+      const blob: any = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.onload = function () {
+          resolve(xhr.response);
+        };
+        xhr.onerror = function () {
+          reject(new TypeError("Network request failed"));
+        };
+        xhr.responseType = "blob";
+        xhr.open("GET", _license, true);
+        xhr.send(null);
+      });
+
+      const ref = storage.ref(`users/${user?.uid}/license_picture.jpg`);
+      const snapshot = ref.put(blob);
+      const snap = await snapshot;
+      const url = await snap.ref.getDownloadURL();
+
+      await db.collection("users").doc(user?.uid).set(
+        {
+          licenseURL: url,
+        },
+        { merge: true }
+      );
+    }
   };
 
-  const pickImage = async () => {
+  const pickImage = async ({
+    aspect = undefined,
+    allowsEditing = false,
+    resize = false,
+    setPhoto,
+  }: PickImageProps) => {
     await ImagePicker.requestCameraPermissionsAsync();
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
+      aspect,
+      allowsEditing,
       quality: 1,
     });
 
     if (!result.cancelled) {
-      const { uri } = await resizePhoto(result.uri, [224, 224]);
-      setImage(uri);
+      if (resize) {
+        const { uri } = await resizePhoto(result.uri, [512, 512]);
+        setPhoto(uri);
+      } else {
+        setPhoto(result.uri);
+      }
+    }
+  };
+
+  const takePhoto = async ({
+    aspect = undefined,
+    allowsEditing = false,
+    resize = false,
+    setPhoto,
+  }: PickImageProps) => {
+    await ImagePicker.requestCameraPermissionsAsync();
+    let result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      aspect,
+      allowsEditing,
+      quality: 1,
+    });
+
+    if (!result.cancelled) {
+      if (resize) {
+        const { uri } = await resizePhoto(result.uri, [512, 512]);
+        setPhoto(uri);
+      } else {
+        setPhoto(result.uri);
+      }
     }
   };
 
@@ -169,7 +247,17 @@ const Signup: React.FC<SignupProps> = () => {
               source={image ? { uri: image } : undefined}
               icon={{ type: "feather", name: "image" }}
             >
-              <Avatar.Accessory size={30} onPress={pickImage} />
+              <Avatar.Accessory
+                size={30}
+                onPress={() =>
+                  pickImage({
+                    setPhoto: setImage,
+                    aspect: [1, 1],
+                    resize: true,
+                    allowsEditing: true,
+                  })
+                }
+              />
             </Avatar>
           </View>
 
@@ -246,7 +334,71 @@ const Signup: React.FC<SignupProps> = () => {
 
           <Text
             style={tailwind(
-              `text-xs ${errors.password ? "text-red-500" : "text-gray-600"}`
+              `text-xs ${errors.license ? "text-red-500" : "text-gray-600"}`
+            )}
+          >
+            Drivers License {errors.license && "Required"}
+          </Text>
+          <View style={tailwind("mt-2 flex-1 mr-2")}>
+            <View
+              style={tailwind("flex flex-row items-center justify-between")}
+            >
+              <Avatar
+                size="medium"
+                containerStyle={tailwind("bg-gray-300")}
+                source={license ? { uri: license } : undefined}
+                icon={{ type: "feather", name: "image" }}
+                onPress={() => {
+                  if (license)
+                    navigation.navigate("ViewPhoto", { uri: license });
+                }}
+                imageProps={{ resizeMode: "cover", resizeMethod: "auto" }}
+              />
+
+              <View style={tailwind("flex flex-row items-center")}>
+                <TouchableOpacity
+                  onPress={() =>
+                    takePhoto({
+                      setPhoto: setLicense,
+                      allowsEditing: true,
+                    })
+                  }
+                >
+                  <Icon
+                    name="camera"
+                    type="feather"
+                    color="#4B5563"
+                    size={18}
+                  />
+                  <Text style={tailwind("text-xs text-gray-600")}>Camera</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() =>
+                    pickImage({
+                      setPhoto: setLicense,
+                      allowsEditing: true,
+                    })
+                  }
+                  style={tailwind("ml-4")}
+                >
+                  <Icon
+                    name="upload"
+                    type="feather"
+                    color="#4B5563"
+                    size={18}
+                  />
+                  <Text style={tailwind("text-xs text-gray-600")}>Upload</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+
+          <Text
+            style={tailwind(
+              `text-xs mt-4 ${
+                errors.password ? "text-red-500" : "text-gray-600"
+              }`
             )}
           >
             Password {errors.password && "Required"}

@@ -56,7 +56,7 @@ const FAQs: React.FC<FAQProps> = ({ shop }) => {
           userID: _data.id,
           user: {
             name: _data.fullName,
-            photoURL: _data.photoURL,
+            photoURL: _data.photoURL ?? "",
           },
           question: question.trim(),
           answer: "",

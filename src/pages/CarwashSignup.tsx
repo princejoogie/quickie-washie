@@ -20,8 +20,6 @@ import { CITIES, WIDTH } from "../constants";
 import { useNavigation } from "@react-navigation/core";
 import { Picker } from "@react-native-picker/picker";
 
-interface SignupProps {}
-
 interface PickImageProps {
   aspect?: [number, number] | undefined;
   resize?: boolean;
@@ -29,7 +27,7 @@ interface PickImageProps {
   setPhoto: React.Dispatch<React.SetStateAction<string | undefined>>;
 }
 
-const CarwashSignup: React.FC<SignupProps> = () => {
+const CarwashSignup: React.FC = () => {
   const navigation = useNavigation();
   const [city, setCity] = useState(CITIES[0]);
   const [shopName, setShopName] = useState("");
@@ -198,7 +196,7 @@ const CarwashSignup: React.FC<SignupProps> = () => {
         xhr.send(null);
       });
 
-      const ref = storage.ref(`shops/${user?.uid}/permit.jpg`);
+      const ref = storage.ref(`users/${user?.uid}/permit.jpg`);
       const snapshot = ref.put(blob);
       const snap = await snapshot;
       const url = await snap.ref.getDownloadURL();

@@ -1,6 +1,7 @@
 import { useNavigation } from "@react-navigation/core";
 import React, { useContext, useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Platform,
   ScrollView,
   Text,
@@ -9,12 +10,12 @@ import {
 } from "react-native";
 import { Avatar, Icon, SearchBar } from "react-native-elements";
 import tailwind from "tailwind-rn";
-import { Divider, Spacer } from "../../components";
-import { SHADOW_SM } from "../../constants";
+import { Divider, ForReview, Spacer } from "../../components";
+import { SHADOW_SM, WIDTH } from "../../constants";
 import { AdminContext } from "../../contexts/Admin/AdminContext";
 import { DatabaseContext } from "../../contexts/DatabaseContext";
 import { auth } from "../../lib/firebase";
-import { ShopProps } from "../../types/data-types";
+import { ShopProps, User } from "../../types/data-types";
 
 interface Item {
   shop: ShopProps;
@@ -67,34 +68,16 @@ const CarwashItem: React.FC<Item> = ({ shop }) => {
   );
 };
 
-const Home: React.FC = () => {
-  const { data } = useContext(DatabaseContext);
+interface ApprovedProps {
+  data: User;
+}
+
+const ApprovedHome: React.FC<ApprovedProps> = ({ data }) => {
   const { approvedShops } = useContext(AdminContext);
   const [shops, setShops] = useState(approvedShops);
   const [query, setQuery] = useState("");
   const [noResult, setNoResult] = useState(false);
   const navigation = useNavigation();
-
-  useEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <TouchableOpacity onPress={() => auth.signOut()}>
-          <Icon name="logout" />
-        </TouchableOpacity>
-      ),
-      headerRightContainerStyle: tailwind("mr-2"),
-      headerLeft: () => (
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate("EditProfile");
-          }}
-        >
-          <Icon name="user" type="feather" />
-        </TouchableOpacity>
-      ),
-      headerLeftContainerStyle: tailwind("ml-2"),
-    });
-  }, []);
 
   const searchCarwash = async (text: string) => {
     if (!text.trim()) {
@@ -210,6 +193,54 @@ const Home: React.FC = () => {
 
       <Spacer />
     </ScrollView>
+  );
+};
+
+const Home: React.FC = () => {
+  const { data: oldData } = useContext(DatabaseContext);
+  const data = oldData as User;
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity onPress={() => auth.signOut()}>
+          <Icon name="logout" />
+        </TouchableOpacity>
+      ),
+      headerRightContainerStyle: tailwind("mr-2"),
+      headerLeft: () => (
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate("EditProfile");
+          }}
+        >
+          <Icon name="user" type="feather" />
+        </TouchableOpacity>
+      ),
+      headerLeftContainerStyle: tailwind("ml-2"),
+    });
+  }, []);
+
+  if (!data) {
+    return (
+      <View style={tailwind("flex flex-1 items-center justify-center")}>
+        <ActivityIndicator size="large" color="#000" />
+      </View>
+    );
+  }
+
+  if (data.approved) {
+    return <ApprovedHome data={data} />;
+  }
+
+  return (
+    <View style={tailwind("flex flex-1 items-center justify-center")}>
+      <ForReview width={WIDTH * (7 / 10)} />
+      <Text style={tailwind("mt-4 text-lg text-gray-600")}>
+        Application under review
+      </Text>
+    </View>
   );
 };
 

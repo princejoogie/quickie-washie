@@ -219,7 +219,7 @@ const ServiceItem: React.FC<ServiceProps> = ({
         { ...SHADOW_SM },
       ]}
     >
-      <View style={tailwind("items-center justify-center")}>
+      <View>
         {selectedService === service.id ? (
           <Icon
             name="dot-circle-o"
@@ -238,12 +238,10 @@ const ServiceItem: React.FC<ServiceProps> = ({
           <Text style={tailwind("text-xs text-gray-500")}>Price Range: </Text>
           <Text style={tailwind("text-xs")}>{service.priceRange}</Text>
         </View>
-        <View style={tailwind("items-center flex flex-row")}>
-          <Text style={tailwind("text-xs text-gray-500")}>Description: </Text>
-          <Text numberOfLines={2} style={tailwind("text-xs")}>
-            {service.description}
-          </Text>
-        </View>
+        <Text style={tailwind("text-xs text-gray-500")}>Description: </Text>
+        <Text numberOfLines={3} style={tailwind("ml-2 flex flex-row text-xs")}>
+          {service.description}
+        </Text>
       </View>
     </TouchableOpacity>
   );

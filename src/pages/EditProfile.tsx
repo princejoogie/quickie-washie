@@ -174,7 +174,6 @@ const EditProfile: React.FC<{ navigation: any }> = ({ navigation }) => {
         transparent={false}
         visible={modalShown}
         onRequestClose={() => {
-          Alert.alert("Modal has been closed.");
           setModalShown(!modalShown);
         }}
       >
@@ -201,7 +200,7 @@ const EditProfile: React.FC<{ navigation: any }> = ({ navigation }) => {
                 setPassword(text);
                 setHasError(() => false);
               }}
-              style={tailwind("border border-gray-300 rounded mt-1 px-3 py-1")}
+              style={tailwind("border border-gray-300 rounded mt-2 px-3 py-2")}
               placeholder="******"
             />
 
@@ -211,32 +210,43 @@ const EditProfile: React.FC<{ navigation: any }> = ({ navigation }) => {
               </Text>
             )}
 
-            <TouchableOpacity
-              style={tailwind(
-                "bg-green-400 items-center justify-center mt-4 px-4 py-2 rounded"
-              )}
-              onPress={async () => {
-                setDeactivating(() => true);
-                try {
-                  await auth.signInWithEmailAndPassword(
-                    data.email,
-                    password.trim()
-                  );
+            <View style={tailwind("flex flex-row items-center")}>
+              <TouchableOpacity
+                style={tailwind(
+                  "mr-1 flex-1 flex-shrink-0 items-center justify-center mt-4 px-4 py-2 rounded"
+                )}
+                onPress={() => setModalShown(false)}
+              >
+                <Text style={tailwind("text-gray-600")}>Cancel</Text>
+              </TouchableOpacity>
 
-                  await deactivate();
-                } catch (err) {
-                  Vibration.vibrate();
-                  setHasError(true);
-                  setDeactivating(() => false);
-                }
-              }}
-            >
-              {deactivating ? (
-                <ActivityIndicator size="small" color="#fff" />
-              ) : (
-                <Text style={tailwind("text-white")}>Confirm</Text>
-              )}
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={tailwind(
+                  "ml-1 flex-1 flex-shrink-0 bg-green-400 items-center justify-center mt-4 px-4 py-2 rounded"
+                )}
+                onPress={async () => {
+                  setDeactivating(() => true);
+                  try {
+                    await auth.signInWithEmailAndPassword(
+                      data.email,
+                      password.trim()
+                    );
+
+                    await deactivate();
+                  } catch (err) {
+                    Vibration.vibrate();
+                    setHasError(true);
+                    setDeactivating(() => false);
+                  }
+                }}
+              >
+                {deactivating ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  <Text style={tailwind("text-white")}>Confirm</Text>
+                )}
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>

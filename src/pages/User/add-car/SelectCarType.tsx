@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { Icon } from "react-native-elements";
 import tailwind from "tailwind-rn";
-import { SHADOW_SM } from "../../../constants";
+import { CarList, SHADOW_SM } from "../../../constants";
 import { DatabaseContext } from "../../../contexts/DatabaseContext";
 import { db } from "../../../lib/firebase";
 import { CarType } from "../../../types/data-types";
@@ -51,7 +51,7 @@ const CarItem: React.FC<CarItemProps> = ({ type, setType, checked }) => {
 
 const SelectCarType: React.FC = ({ navigation }: any) => {
   const { user } = useContext(DatabaseContext);
-  const [type, setType] = useState<CarType>("Hatchback / Sedan");
+  const [type, setType] = useState<CarType>("Convertible");
   const [plateNo, setPlatNo] = useState("");
   const [loading, setLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -61,34 +61,17 @@ const SelectCarType: React.FC = ({ navigation }: any) => {
       <ScrollView style={tailwind("flex flex-1")}>
         <KeyboardAvoidingView style={tailwind("p-4")}>
           <Text style={tailwind("font-bold text-lg")}>Select Car Type</Text>
-          <CarItem
-            {...{
-              type: "Bus / Truck",
-              setType,
-              checked: type === "Bus / Truck",
-            }}
-          />
-          <CarItem
-            {...{
-              type: "Hatchback / Sedan",
-              setType,
-              checked: type === "Hatchback / Sedan",
-            }}
-          />
-          <CarItem
-            {...{
-              type: "Jeep / SUV",
-              setType,
-              checked: type === "Jeep / SUV",
-            }}
-          />
-          <CarItem
-            {...{
-              type: "Motorcycle / Scooter",
-              setType,
-              checked: type === "Motorcycle / Scooter",
-            }}
-          />
+
+          {CarList.map((car) => (
+            <CarItem
+              key={car}
+              {...{
+                type: car,
+                setType,
+                checked: type === car,
+              }}
+            />
+          ))}
 
           <Text style={tailwind("font-bold text-lg mt-4")}>Plate Number</Text>
           <TextInput

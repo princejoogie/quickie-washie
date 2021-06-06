@@ -1,7 +1,7 @@
 import { firebase } from "../lib/firebase";
-export type Privilege = "ADMIN" | "USER" | "CARWASH_OWNER";
+type Privilege = "ADMIN" | "USER" | "CARWASH_OWNER";
 
-export type NCRCity =
+type NCRCity =
   | "Caloocan"
   | "Las Piñas"
   | "Makati"
@@ -16,21 +16,31 @@ export type NCRCity =
   | "Taguig"
   | "Valenzuela";
 
-export type LocType = {
+type LocType = {
   latitude: number;
   longitude: number;
 };
 
-export type CarType =
-  | "Bus / Truck"
-  | "Hatchback / Sedan"
-  | "Jeep / SUV"
-  | "Motorcycle / Scooter";
+type CarType =
+  | "Sedan (4 Door)"
+  | "Sedan (2 Door)"
+  | "Sports Car"
+  | "Station Wagon"
+  | "Hatchback"
+  | "Convertible"
+  | "SUV"
+  | "Minivan"
+  | "Pickup Truck";
 
 interface CarProp {
   type: CarType;
   id: string;
   plateNumber: string;
+}
+
+interface AdditionPrice {
+  price: string;
+  type: CarType;
 }
 
 interface User {
@@ -54,8 +64,9 @@ interface ShopProps extends User {
 interface Service {
   id: string;
   name: string;
-  priceRange: string;
+  price: string;
   description: string;
+  additional: AdditionPrice[];
 }
 
 type AppointmentStatus = "ON-GOING" | "FINISHED" | "CANCELLED";

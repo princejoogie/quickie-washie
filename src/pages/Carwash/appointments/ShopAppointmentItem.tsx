@@ -15,13 +15,13 @@ import tailwind from "tailwind-rn";
 import { SHADOW_SM } from "../../../constants";
 import { db } from "../../../lib/firebase";
 import { formatAppointmentDate } from "../../../lib/helpers";
-import { AppoitmentItem, User } from "../../../types/data-types";
+import { Appointment, User } from "../../../types/data-types";
 
 const ShopAppointmentItem: React.FC = ({ navigation }: any) => {
   const route = useRoute();
   const {
     appointment: { service, appointmentDate, vehicle: car, id, userID, status },
-  } = route.params as { appointment: AppoitmentItem };
+  } = route.params as { appointment: Appointment };
   const date = new Date(appointmentDate);
   const [userData, setUserData] = useState<User>();
   const [loading, setLoading] = useState(true);
@@ -152,7 +152,7 @@ const ShopAppointmentItem: React.FC = ({ navigation }: any) => {
           <Text style={tailwind("font-bold")}>{service.name}</Text>
           <Text style={tailwind("mt-2 text-xs text-gray-500")}>
             Price Range:{" "}
-            <Text style={tailwind("text-black")}>{service.priceRange}</Text>
+            <Text style={tailwind("text-black")}>{service.price}</Text>
           </Text>
           <Text style={tailwind("text-xs text-gray-500")}>
             Description:{" "}

@@ -10,14 +10,14 @@ import tailwind from "tailwind-rn";
 import { SHADOW_SM } from "../../../constants";
 import { DatabaseContext } from "../../../contexts/DatabaseContext";
 import { db } from "../../../lib/firebase";
-import { AppoitmentItem } from "../../../types/data-types";
+import { Appointment } from "../../../types/data-types";
 import {} from "react-native";
 import { useNavigation } from "@react-navigation/core";
 import { Icon } from "react-native-elements";
 import { formatAppointmentDate } from "../../../lib/helpers";
 
 const Appointments: React.FC = () => {
-  const [appointments, setAppointments] = useState<AppoitmentItem[]>([]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
   const { user } = useContext(DatabaseContext);
   const [loading, setLoading] = useState(true);
   const [noData, setNoData] = useState(false);
@@ -34,7 +34,7 @@ const Appointments: React.FC = () => {
           setNoData(() => false);
           setAppointments(
             snapshot.docs.map(
-              (doc) => ({ id: doc.id, ...doc.data() } as AppoitmentItem)
+              (doc) => ({ id: doc.id, ...doc.data() } as Appointment)
             )
           );
         }
@@ -59,7 +59,7 @@ const Appointments: React.FC = () => {
 };
 
 interface ItemProp {
-  apt: AppoitmentItem;
+  apt: Appointment;
 }
 
 const Item: React.FC<ItemProp> = ({ apt }) => {

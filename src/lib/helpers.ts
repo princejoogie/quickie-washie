@@ -1,5 +1,5 @@
 import { DAYS, MONTHS } from "../constants";
-import { LocType } from "../types/data-types";
+import { AdditionPrice, CarType, LocType, Service } from "../types/data-types";
 
 export const getLocDistance = (loc1: LocType, loc2: LocType) => {
   var R = 6371;
@@ -39,4 +39,18 @@ export const formatAppointmentDate = (date: Date, time: Date) => {
   return `${DAYS[date.getDay()]}, ${date.getDate()} ${
     MONTHS[date.getMonth()]
   } ${date.getFullYear()} at ${formatTime(time.toLocaleTimeString())}`;
+};
+
+export const getAdditional = (
+  additional: AdditionPrice[],
+  type: CarType
+): string => {
+  const item = additional.find((el) => el.type === type);
+  return item?.price ?? "0";
+};
+
+export const getTotalPrice = (service: Service, type: CarType): string => {
+  const addition = +getAdditional(service.additional, type);
+  const basePrice = +service.price;
+  return (addition + basePrice).toString();
 };

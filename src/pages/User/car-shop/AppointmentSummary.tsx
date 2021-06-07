@@ -15,14 +15,14 @@ import tailwind from "tailwind-rn";
 import { SHADOW_SM } from "../../../constants";
 import { DatabaseContext } from "../../../contexts/DatabaseContext";
 import { db, timestamp } from "../../../lib/firebase";
-import { formatAppointmentDate } from "../../../lib/helpers";
+import {
+  formatAppointmentDate,
+  getAdditional,
+  getTotalPrice,
+} from "../../../lib/helpers";
 import { CarProp, Service, ShopProps } from "../../../types/data-types";
 
-interface AppointmentSummaryProps {}
-
-const AppointmentSummary: React.FC<AppointmentSummaryProps> = ({
-  navigation,
-}: any) => {
+const AppointmentSummary: React.FC = ({ navigation }: any) => {
   const { user } = useContext(DatabaseContext);
   const route = useRoute();
   const { service, shop, appointmentDate, car } = route.params as {
@@ -94,6 +94,7 @@ const AppointmentSummary: React.FC<AppointmentSummaryProps> = ({
                         appointmentDate,
                         vehicle: car,
                         status: "ON-GOING",
+                        totalPrice: getTotalPrice(service, car.type),
                         timestamp: timestamp(),
                       });
                       setLoading(() => false);
@@ -213,8 +214,8 @@ const AppointmentSummary: React.FC<AppointmentSummaryProps> = ({
           >
             <Text style={tailwind("font-bold")}>{service.name}</Text>
             <Text style={tailwind("mt-2 text-xs text-gray-500")}>
-              Price Range:{" "}
-              <Text style={tailwind("text-black")}>{service.priceRange}</Text>
+              Price:{" "}
+              <Text style={tailwind("text-black")}>₱{service.price}</Text>
             </Text>
             <Text style={tailwind("text-xs text-gray-500")}>
               Description:{" "}
@@ -243,6 +244,25 @@ const AppointmentSummary: React.FC<AppointmentSummaryProps> = ({
             <View style={tailwind("items-center flex flex-row")}>
               <Text style={tailwind("text-xs text-gray-500")}>Type: </Text>
               <Text style={tailwind("text-xs")}>{car.type}</Text>
+            </View>
+            <Text style={tailwind("text-xs text-gray-500")}>
+              Additional Price:{" "}
+              <Text style={tailwind("text-black")}>
+                ₱{getAdditional(service.additional, car.type)}
+              </Text>
+            </Text>
+          </View>
+
+          <View
+            style={[tailwind("bg-white rounded p-2 mt-4"), { ...SHADOW_SM }]}
+          >
+            <View style={tailwind("items-center flex flex-row")}>
+              <Text style={tailwind("text-sm text-gray-500")}>
+                Total Price:{" "}
+              </Text>
+              <Text style={tailwind("text-sm font-bold")}>
+                ₱{getTotalPrice(service, car.type)}
+              </Text>
             </View>
           </View>
         </View>

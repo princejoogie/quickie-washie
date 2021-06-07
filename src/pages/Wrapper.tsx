@@ -17,7 +17,7 @@ import {
   Feedbacks,
   ShopReports,
 } from "./Carwash";
-import { UserOwnedCarsWrapper, UserHome } from "./User";
+import { UserOwnedCarsWrapper, UserHome, UserNotifications } from "./User";
 import { Loading, ViewPhoto } from "../components";
 import ShopWrapper from "./User/ShopWrapper";
 import ServicesWrapper from "./Carwash/ServicesWrapper";
@@ -153,6 +153,11 @@ const Wrapper: React.FC = () => {
               options={{
                 headerShown: false,
               }}
+            />
+            <Stack.Screen
+              name="UserNotifications"
+              component={UserNotifications}
+              options={{ headerTitle: "Notifications" }}
             />
           </>
         )}

@@ -15,6 +15,7 @@
     "@react-navigation/stack": "^5.14.5",
     "expo": "~41.0.1",
     "expo-file-system": "~11.0.2",
+    "expo-font": "~9.1.0",
     "expo-image-manipulator": "~9.1.0",
     "expo-image-picker": "~10.1.4",
     "expo-location": "~12.0.4",

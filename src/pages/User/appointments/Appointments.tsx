@@ -62,9 +62,59 @@ interface ItemProp {
   apt: Appointment;
 }
 
+const getTimeDiff = (a: Date, b: Date): number | null => {
+  if (
+    a.getFullYear() !== b.getFullYear() ||
+    a.getMonth() !== b.getMonth() ||
+    a.getDate() !== b.getDate()
+  ) {
+    return null;
+  }
+
+  return (b.getTime() - a.getTime()) / 1000;
+};
+
+const formatSeconds = (seconds: number): string => {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = Math.floor((seconds % 3600) % 60);
+
+  if (s <= 59 && m <= 0)
+    return s > 0 ? s + (s == 1 ? " second" : " seconds") : "";
+
+  const hDisplay = h > 0 ? h + (h == 1 ? " hour, and " : " hours, and ") : "";
+  const mDisplay = m > 0 ? m + (m == 1 ? " minute" : " minutes") : "";
+  return hDisplay + mDisplay;
+};
+
 const Item: React.FC<ItemProp> = ({ apt }) => {
   const navigation = useNavigation();
+  let interval = 0;
   const date = new Date(apt.appointmentDate);
+  const [diff, setDiff] = useState(getTimeDiff(new Date(), date));
+  const [hasPassed, setHasPassed] = useState(false);
+
+  useEffect(() => {
+    const _diff = getTimeDiff(new Date(), date);
+    if (_diff && _diff <= 0) {
+      clearInterval(interval);
+      setHasPassed(true);
+    } else setDiff(_diff);
+
+    interval = setInterval(() => {
+      const _diff = getTimeDiff(new Date(), date);
+      if (_diff) {
+        if (_diff < 1) {
+          clearInterval(interval);
+          setHasPassed(true);
+        } else {
+          setDiff(_diff);
+        }
+      } else clearInterval(interval);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <TouchableOpacity
@@ -80,16 +130,31 @@ const Item: React.FC<ItemProp> = ({ apt }) => {
     >
       <View style={tailwind("flex-1")}>
         <Text style={tailwind("font-bold")}>{apt.service.name}</Text>
-        <View style={tailwind("items-center mt-2 flex flex-row")}>
+        <View style={tailwind("items-center mt-1 flex flex-row")}>
           <Text style={tailwind("text-xs text-gray-500")}>Vehicle: </Text>
           <Text style={tailwind("text-xs")}>{apt.vehicle.plateNumber}</Text>
         </View>
+
         <View style={tailwind("items-center flex flex-row")}>
           <Text style={tailwind("text-xs text-gray-500")}>Date: </Text>
           <Text style={tailwind("text-xs")}>
             {formatAppointmentDate(date, date)}
           </Text>
         </View>
+
+        {!!diff && (
+          <View style={tailwind("mt-1")}>
+            {!hasPassed ? (
+              <Text style={tailwind("text-xs")}>
+                {formatSeconds(diff)} before appointment
+              </Text>
+            ) : (
+              <Text style={tailwind("text-xs text-red-500")}>
+                Appointment Date has passed
+              </Text>
+            )}
+          </View>
+        )}
       </View>
 
       <View style={tailwind("items-center justify-center")}>

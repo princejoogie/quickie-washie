@@ -121,12 +121,30 @@ const ApprovedHome: React.FC<ApprovedProps> = ({ data }) => {
           <Text numberOfLines={1} style={tailwind("text-gray-500")}>
             {data?.email ?? "email@example.com"}
           </Text>
-          <Text
-            numberOfLines={1}
-            style={tailwind("mt-1 text-xs text-gray-500")}
-          >
-            {data?.phoneNumber ?? "phone"}
-          </Text>
+
+          <View style={tailwind("flex flex-row items-center justify-between")}>
+            <Text
+              numberOfLines={1}
+              style={tailwind("mt-1 flex-1 text-xs text-gray-500")}
+            >
+              {data?.phoneNumber ?? "phone"}
+            </Text>
+
+            <TouchableOpacity
+              style={tailwind("mr-2")}
+              onPress={() => {
+                navigation.navigate("UserNotifications");
+              }}
+            >
+              <View
+                style={tailwind(
+                  "absolute -top-1 right-0 w-2 h-2 items-center justify-center z-50 bg-green-500 rounded-full"
+                )}
+              ></View>
+
+              <Icon name="bell" type="feather" color="#000" size={18} />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
 

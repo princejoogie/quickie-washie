@@ -11,7 +11,9 @@ import {
   View,
 } from "react-native";
 import { Avatar, Icon } from "react-native-elements";
+import { TextInput } from "react-native-gesture-handler";
 import tailwind from "tailwind-rn";
+import { Divider, Spacer } from "../../../components";
 import { SHADOW_SM } from "../../../constants";
 import { db } from "../../../lib/firebase";
 import {
@@ -239,8 +241,108 @@ const HistoryItem: React.FC = ({ navigation }: any) => {
             </Text>
           </View>
         </View>
+
+        <Divider className="px-0 my-4" />
+
+        {status === "FINISHED" && <Feedback id={id} />}
+
+        <Spacer />
       </View>
     </ScrollView>
+  );
+};
+
+interface FeedbackProps {
+  id: string;
+}
+
+const renderRating = (
+  rating: number,
+  setRating?: React.Dispatch<React.SetStateAction<number>>
+) => {
+  let views = [];
+
+  for (let i = 0; i < 5; i++) {
+    views.push(
+      <Icon
+        containerStyle={tailwind("mx-1")}
+        onPress={() => {
+          setRating && setRating(i + 1);
+        }}
+        key={`rating-${i}`}
+        name={i < rating ? "star" : "staro"}
+        color={i < rating ? "#F59E0B" : "#000"}
+        type="ant-design"
+        size={30}
+      />
+    );
+  }
+
+  return views;
+};
+
+const Feedback: React.FC<FeedbackProps> = ({ id }) => {
+  const [rating, setRating] = useState(1);
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const submit = async () => {
+    setLoading(() => true);
+    await db
+      .collection("appointments")
+      .doc(id)
+      .set(
+        {
+          feedback: {
+            rating,
+            message: message.trim(),
+          },
+        },
+        { merge: true }
+      );
+    setLoading(() => false);
+  };
+
+  return (
+    <View>
+      <Text style={tailwind("text-base text-black font-bold text-center")}>
+        How was our service?
+      </Text>
+
+      <View style={tailwind("mt-2 flex flex-row items-center justify-center")}>
+        {renderRating(rating, setRating)}
+      </View>
+
+      <Text style={tailwind("mt-4 text-base text-black font-bold text-center")}>
+        Leave us a message
+      </Text>
+      <TextInput
+        multiline
+        value={message}
+        onChangeText={setMessage}
+        numberOfLines={5}
+        textAlignVertical="top"
+        placeholder="Feedback message here..."
+        style={[tailwind("rounded mt-2 h-20 bg-white p-2"), { ...SHADOW_SM }]}
+      />
+
+      <TouchableOpacity
+        activeOpacity={0.5}
+        disabled={loading || !message}
+        onPress={submit}
+        style={tailwind(
+          `flex items-center mt-4 justify-center px-4 py-2 rounded ${
+            loading || !message ? "bg-gray-300" : "bg-blue-500"
+          }`
+        )}
+      >
+        {loading ? (
+          <ActivityIndicator color="#fff" size="small" />
+        ) : (
+          <Text style={tailwind("text-white")}>Submit Feedback</Text>
+        )}
+      </TouchableOpacity>
+    </View>
   );
 };
 

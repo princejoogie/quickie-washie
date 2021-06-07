@@ -83,8 +83,8 @@ const SelectAppointmentDate: React.FC = ({ navigation }: any) => {
       date.getDate(),
       time.getHours(),
       time.getMinutes(),
-      time.getSeconds(),
-      time.getMilliseconds()
+      0,
+      0
     );
   };
 

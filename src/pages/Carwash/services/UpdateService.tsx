@@ -22,7 +22,6 @@ import { AdditionPrice, Service } from "../../../types/data-types";
 const UpdateService: React.FC = ({ navigation }: any) => {
   const route = useRoute();
   const { service } = route.params as { service: Service };
-  console.log(service.additional);
   const { user } = useContext(DatabaseContext);
   const [name, setName] = useState(service.name);
   const [price, setPrice] = useState(service.price);

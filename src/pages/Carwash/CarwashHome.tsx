@@ -65,12 +65,27 @@ const CarwashHome: React.FC = () => {
           />
 
           <View style={tailwind("ml-4 flex justify-center flex-1")}>
-            <Text numberOfLines={2} style={tailwind("text-lg")}>
-              {data?.shopName ?? "Full Name"}
-            </Text>
-            <Text numberOfLines={1} style={tailwind("text-gray-500")}>
+            <View
+              style={tailwind("flex flex-row items-center justify-between")}
+            >
+              <Text numberOfLines={2} style={tailwind("text-lg flex-1")}>
+                {data?.shopName ?? "Full Name"}
+              </Text>
+              <View style={tailwind("ml-4")}>
+                <Icon
+                  name="megaphone"
+                  type="foundation"
+                  onPress={() => {
+                    navigation.navigate("ShopBroadcast");
+                  }}
+                />
+              </View>
+            </View>
+
+            <Text numberOfLines={1} style={tailwind("text-xs text-gray-500")}>
               {data?.email ?? "email@example.com"}
             </Text>
+
             <View style={tailwind("flex flex-row items-center")}>
               <Text
                 numberOfLines={1}
@@ -78,7 +93,7 @@ const CarwashHome: React.FC = () => {
               >
                 {data?.phoneNumber ?? "phone"}
               </Text>
-              <Text style={tailwind("mx-2 text-lg text-gray-500")}>{"|"}</Text>
+              <Text style={tailwind("mx-1 text-lg text-gray-500")}>{"|"}</Text>
               <Text
                 numberOfLines={1}
                 style={tailwind("mt-1 text-xs text-gray-500")}

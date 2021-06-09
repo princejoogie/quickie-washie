@@ -73,11 +73,11 @@ interface ApprovedProps {
 }
 
 const ApprovedHome: React.FC<ApprovedProps> = ({ data }) => {
+  const navigation = useNavigation();
   const { approvedShops } = useContext(AdminContext);
   const [shops, setShops] = useState(approvedShops);
   const [query, setQuery] = useState("");
   const [noResult, setNoResult] = useState(false);
-  const navigation = useNavigation();
 
   useEffect(() => {
     setShops(() => [...approvedShops]);
@@ -133,14 +133,16 @@ const ApprovedHome: React.FC<ApprovedProps> = ({ data }) => {
             <TouchableOpacity
               style={tailwind("mr-2")}
               onPress={() => {
-                navigation.navigate("UserNotifications");
+                navigation.navigate("UserNotifications", {
+                  id: data.id,
+                });
               }}
             >
               <View
                 style={tailwind(
                   "absolute -top-1 right-0 w-2 h-2 items-center justify-center z-50 bg-green-500 rounded-full"
                 )}
-              ></View>
+              />
 
               <Icon name="bell" type="feather" color="#000" size={18} />
             </TouchableOpacity>

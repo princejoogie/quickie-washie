@@ -12,6 +12,7 @@ import {
 } from "./Admin";
 import {
   AnswerQuestion,
+  BroadcastNotification,
   CarwashHome,
   CProfile,
   Feedbacks,
@@ -117,6 +118,11 @@ const Wrapper: React.FC = () => {
               name="ShopServicesWrapper"
               component={ServicesWrapper}
               options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="ShopBroadcast"
+              component={BroadcastNotification}
+              options={{ headerTitle: "Create Notification" }}
             />
           </>
         ) : (

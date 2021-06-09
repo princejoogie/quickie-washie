@@ -84,7 +84,7 @@ const Login: React.FC = () => {
             <Icon
               onPress={() => setVisible(!visible)}
               type="feather"
-              name={`${visible ? "eye-off" : "eye"}`}
+              name={`${!visible ? "eye-off" : "eye"}`}
               size={18}
             />
           }

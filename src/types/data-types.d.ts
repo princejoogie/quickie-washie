@@ -93,3 +93,13 @@ interface Question {
   answer: string;
   timestamp: any;
 }
+
+interface NotificationItem {
+  id: string;
+  content: string;
+  opened: boolean;
+  timestamp: any;
+  title: string;
+  photoURL: string;
+  shopName: string;
+}

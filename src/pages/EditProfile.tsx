@@ -128,6 +128,20 @@ const EditProfile: React.FC<{ navigation: any }> = ({ navigation }) => {
         await db.collection("appointments").doc(apt.id).delete();
       });
 
+      const notifications = await db
+        .collection("users")
+        .doc(user.uid)
+        .collection("notifications")
+        .get();
+      notifications.forEach(async (notif) => {
+        await db
+          .collection("users")
+          .doc(user.uid)
+          .collection("notifications")
+          .doc(notif.id)
+          .delete();
+      });
+
       const shops = await db
         .collection("users")
         .where("privilege", "==", "CARWASH_OWNER")

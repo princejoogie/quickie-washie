@@ -29,7 +29,7 @@ const index: React.FC = () => {
 
         const snapshot = await db
           .collection("users")
-          .where("privilege", "==", "ADMIN")
+          .where("privilege", "==", "USERS")
           .get();
 
         const users = snapshot.docs.map(

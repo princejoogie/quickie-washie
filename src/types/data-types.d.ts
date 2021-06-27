@@ -76,6 +76,7 @@ interface Appointment {
   userID: string;
   service: Service;
   appointmentDate: string;
+  rated: boolean;
   vehicle: CarProp;
   status: AppointmentStatus;
   totalPrice: string;
@@ -102,4 +103,15 @@ interface NotificationItem {
   title: string;
   photoURL: string;
   shopName: string;
+}
+
+interface Feedback {
+  id?: string;
+  shopID: string;
+  feedback: {
+    rating: number;
+    message: string;
+  };
+  service: Service;
+  timestamp: any;
 }

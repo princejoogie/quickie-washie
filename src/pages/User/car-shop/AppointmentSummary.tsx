@@ -20,7 +20,12 @@ import {
   getAdditional,
   getTotalPrice,
 } from "../../../lib/helpers";
-import { CarProp, Service, ShopProps } from "../../../types/data-types";
+import {
+  Appointment,
+  CarProp,
+  Service,
+  ShopProps,
+} from "../../../types/data-types";
 
 const AppointmentSummary: React.FC = ({ navigation }: any) => {
   const { user } = useContext(DatabaseContext);
@@ -96,7 +101,8 @@ const AppointmentSummary: React.FC = ({ navigation }: any) => {
                         status: "ON-GOING",
                         totalPrice: getTotalPrice(service, car.type),
                         timestamp: timestamp(),
-                      });
+                        rated: false,
+                      } as Appointment);
                       setLoading(() => false);
 
                       Alert.alert(

@@ -1,4 +1,5 @@
 import { useRoute } from "@react-navigation/core";
+import { useNavigation } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -15,18 +16,31 @@ import { TextInput } from "react-native-gesture-handler";
 import tailwind from "tailwind-rn";
 import { Divider, Spacer } from "../../../components";
 import { SHADOW_SM } from "../../../constants";
-import { db } from "../../../lib/firebase";
+import { db, timestamp } from "../../../lib/firebase";
 import {
   formatAppointmentDate,
   getAdditional,
   getTotalPrice,
 } from "../../../lib/helpers";
-import { Appointment, ShopProps } from "../../../types/data-types";
+import {
+  Appointment,
+  Feedback,
+  Service,
+  ShopProps,
+} from "../../../types/data-types";
 
 const HistoryItem: React.FC = ({ navigation }: any) => {
   const route = useRoute();
   const {
-    appointment: { service, appointmentDate, shopID, vehicle: car, id, status },
+    appointment: {
+      service,
+      appointmentDate,
+      shopID,
+      vehicle: car,
+      id,
+      status,
+      rated,
+    },
   } = route.params as { appointment: Appointment };
   const date = new Date(appointmentDate);
   const [shop, setShop] = useState<ShopProps>();
@@ -244,7 +258,9 @@ const HistoryItem: React.FC = ({ navigation }: any) => {
 
         <Divider className="px-0 my-4" />
 
-        {status === "FINISHED" && <Feedback id={id} />}
+        {status === "FINISHED" && !rated && (
+          <FeedbackItem {...{ shopID, aptID: id, service }} />
+        )}
 
         <Spacer />
       </View>
@@ -253,7 +269,9 @@ const HistoryItem: React.FC = ({ navigation }: any) => {
 };
 
 interface FeedbackProps {
-  id: string;
+  shopID: string;
+  aptID: string;
+  service: Service;
 }
 
 const renderRating = (
@@ -281,26 +299,28 @@ const renderRating = (
   return views;
 };
 
-const Feedback: React.FC<FeedbackProps> = ({ id }) => {
+const FeedbackItem: React.FC<FeedbackProps> = ({ aptID, shopID, service }) => {
+  const navigation = useNavigation();
   const [rating, setRating] = useState(1);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
   const submit = async () => {
     setLoading(() => true);
-    await db
-      .collection("appointments")
-      .doc(id)
-      .set(
-        {
-          feedback: {
-            rating,
-            message: message.trim(),
-          },
-        },
-        { merge: true }
-      );
+    await db.collection("feedbacks").add({
+      shopID,
+      feedback: {
+        rating,
+        message: message.trim(),
+      },
+      service,
+      timestamp: timestamp(),
+    } as Feedback);
+    await db.collection("appointments").doc(aptID).update({
+      rated: true,
+    });
     setLoading(() => false);
+    navigation.goBack();
   };
 
   return (

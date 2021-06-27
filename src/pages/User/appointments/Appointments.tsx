@@ -13,7 +13,11 @@ import { db } from "../../../lib/firebase";
 import { Appointment } from "../../../types/data-types";
 import { useNavigation } from "@react-navigation/core";
 import { Icon } from "react-native-elements";
-import { formatAppointmentDate } from "../../../lib/helpers";
+import {
+  formatAppointmentDate,
+  formatSeconds,
+  getTimeDiff,
+} from "../../../lib/helpers";
 
 const Appointments: React.FC = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -61,31 +65,6 @@ const Appointments: React.FC = () => {
 interface ItemProp {
   apt: Appointment;
 }
-
-const getTimeDiff = (a: Date, b: Date): number | null => {
-  if (
-    a.getFullYear() !== b.getFullYear() ||
-    a.getMonth() !== b.getMonth() ||
-    a.getDate() !== b.getDate()
-  ) {
-    return null;
-  }
-
-  return (b.getTime() - a.getTime()) / 1000;
-};
-
-const formatSeconds = (seconds: number): string => {
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  const s = Math.floor((seconds % 3600) % 60);
-
-  if (s <= 59 && m <= 0)
-    return s > 0 ? s + (s == 1 ? " second" : " seconds") : "";
-
-  const hDisplay = h > 0 ? h + (h == 1 ? " hour, and " : " hours, and ") : "";
-  const mDisplay = m > 0 ? m + (m == 1 ? " minute" : " minutes") : "";
-  return hDisplay + mDisplay;
-};
 
 const Item: React.FC<ItemProp> = ({ apt }) => {
   const navigation = useNavigation();

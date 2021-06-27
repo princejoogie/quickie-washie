@@ -14,7 +14,11 @@ import { Appointment } from "../../../types/data-types";
 import {} from "react-native";
 import { useNavigation } from "@react-navigation/core";
 import { Icon } from "react-native-elements";
-import { formatAppointmentDate } from "../../../lib/helpers";
+import {
+  formatAppointmentDate,
+  formatSeconds,
+  getTimeDiff,
+} from "../../../lib/helpers";
 
 const Appointments: React.FC = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -64,7 +68,32 @@ interface ItemProp {
 
 const Item: React.FC<ItemProp> = ({ apt }) => {
   const navigation = useNavigation();
+  let interval = 0;
   const date = new Date(apt.appointmentDate);
+  const [diff, setDiff] = useState(getTimeDiff(new Date(), date));
+  const [hasPassed, setHasPassed] = useState(false);
+
+  useEffect(() => {
+    const _diff = getTimeDiff(new Date(), date);
+    if (_diff && _diff <= 0) {
+      clearInterval(interval);
+      setHasPassed(true);
+    } else setDiff(_diff);
+
+    interval = setInterval(() => {
+      const _diff = getTimeDiff(new Date(), date);
+      if (_diff) {
+        if (_diff < 1) {
+          clearInterval(interval);
+          setHasPassed(true);
+        } else {
+          setDiff(_diff);
+        }
+      } else clearInterval(interval);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <TouchableOpacity
@@ -92,6 +121,20 @@ const Item: React.FC<ItemProp> = ({ apt }) => {
             {formatAppointmentDate(date, date)}
           </Text>
         </View>
+
+        {!!diff && apt.status === "ON-GOING" && (
+          <View style={tailwind("mt-1")}>
+            {!hasPassed ? (
+              <Text style={tailwind("text-xs")}>
+                {formatSeconds(diff)} before appointment
+              </Text>
+            ) : (
+              <Text style={tailwind("text-xs text-red-500")}>
+                Appointment Date has passed
+              </Text>
+            )}
+          </View>
+        )}
       </View>
 
       <View style={tailwind("items-end justify-between")}>

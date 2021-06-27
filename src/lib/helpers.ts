@@ -54,3 +54,20 @@ export const getTotalPrice = (service: Service, type: CarType): string => {
   const basePrice = +service.price;
   return (addition + basePrice).toString();
 };
+
+export const getTimeDiff = (a: Date, b: Date): number | null => {
+  return (b.getTime() - a.getTime()) / 1000;
+};
+
+export const formatSeconds = (seconds: number): string => {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = Math.floor((seconds % 3600) % 60);
+
+  if (s <= 59 && m <= 0)
+    return s > 0 ? s + (s == 1 ? " second" : " seconds") : "";
+
+  const hDisplay = h > 0 ? h + (h == 1 ? " hour, and " : " hours, and ") : "";
+  const mDisplay = m > 0 ? m + (m == 1 ? " minute" : " minutes") : "";
+  return hDisplay + mDisplay;
+};

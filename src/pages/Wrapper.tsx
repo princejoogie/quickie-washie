@@ -107,7 +107,7 @@ const Wrapper: React.FC = () => {
             <Stack.Screen
               name="ShopFeedbacks"
               component={Feedbacks}
-              options={{ headerTitle: "Feedbacks" }}
+              options={{ headerShown: false }}
             />
             <Stack.Screen
               name="ShopAppointments"

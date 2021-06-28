@@ -108,10 +108,9 @@ interface NotificationItem {
 interface Feedback {
   id?: string;
   shopID: string;
-  feedback: {
-    rating: number;
-    message: string;
-  };
+  userID: string;
+  rating: number;
+  message: string;
   service: Service;
   timestamp: any;
 }

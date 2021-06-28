@@ -36,6 +36,7 @@ const HistoryItem: React.FC = ({ navigation }: any) => {
       service,
       appointmentDate,
       shopID,
+      userID,
       vehicle: car,
       id,
       status,
@@ -259,7 +260,7 @@ const HistoryItem: React.FC = ({ navigation }: any) => {
         <Divider className="px-0 my-4" />
 
         {status === "FINISHED" && !rated && (
-          <FeedbackItem {...{ shopID, aptID: id, service }} />
+          <FeedbackItem {...{ shopID, aptID: id, service, userID }} />
         )}
 
         <Spacer />
@@ -270,6 +271,7 @@ const HistoryItem: React.FC = ({ navigation }: any) => {
 
 interface FeedbackProps {
   shopID: string;
+  userID: string;
   aptID: string;
   service: Service;
 }
@@ -299,7 +301,12 @@ const renderRating = (
   return views;
 };
 
-const FeedbackItem: React.FC<FeedbackProps> = ({ aptID, shopID, service }) => {
+const FeedbackItem: React.FC<FeedbackProps> = ({
+  aptID,
+  shopID,
+  service,
+  userID,
+}) => {
   const navigation = useNavigation();
   const [rating, setRating] = useState(1);
   const [message, setMessage] = useState("");
@@ -309,10 +316,9 @@ const FeedbackItem: React.FC<FeedbackProps> = ({ aptID, shopID, service }) => {
     setLoading(() => true);
     await db.collection("feedbacks").add({
       shopID,
-      feedback: {
-        rating,
-        message: message.trim(),
-      },
+      userID,
+      rating,
+      message: message.trim(),
       service,
       timestamp: timestamp(),
     } as Feedback);

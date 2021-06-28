@@ -1,6 +1,6 @@
 export { default as CarwashHome } from "./CarwashHome";
 export { default as ShopReports } from "./Reports";
-export { default as Feedbacks } from "./feedbacks";
+export { default as Feedbacks } from "./ShopFeedbackWrapper";
 export { default as CProfile } from "./CProfile";
 export { default as AnswerQuestion } from "./AnswerQuestion";
 export { default as BroadcastNotification } from "./broadcast";

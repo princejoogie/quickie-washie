@@ -71,3 +71,25 @@ export const formatSeconds = (seconds: number): string => {
   const mDisplay = m > 0 ? m + (m == 1 ? " minute" : " minutes") : "";
   return hDisplay + mDisplay;
 };
+
+export const commaize = (x: number) => {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};
+
+export const indexOfMax = (arr: number[]) => {
+  if (arr.length === 0) {
+    return -1;
+  }
+
+  var max = arr[0];
+  var maxIndex = 0;
+
+  for (var i = 1; i < arr.length; i++) {
+    if (arr[i] > max) {
+      maxIndex = i;
+      max = arr[i];
+    }
+  }
+
+  return maxIndex;
+};

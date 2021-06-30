@@ -81,6 +81,7 @@ interface Appointment {
   status: AppointmentStatus;
   totalPrice: string;
   timestamp: any;
+  date?: Date;
 }
 
 interface Question {

@@ -1,6 +1,6 @@
 TODO 
 - Message box on shop module
-- Able to change appointment date from shop module
-- Able to notify user on the changed apt date
+[x] Able to change appointment date from shop module
+[x] Able to notify user on the changed apt date
 - Nullify appointment date if same time and car
-- Get annualy not monthly
+[x] Get annualy not monthly

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -11,8 +11,10 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import tailwind from "tailwind-rn";
 import { Icon } from "react-native-elements";
 import { useRoute } from "@react-navigation/core";
-import { Service, ShopProps } from "../../../types/data-types";
+import { Appointment, Service, ShopProps } from "../../../types/data-types";
 import { formatAppointmentDate } from "../../../lib/helpers";
+import { db } from "../../../lib/firebase";
+import { DatabaseContext } from "../../../contexts/DatabaseContext";
 
 const SelectAppointmentDate: React.FC = ({ navigation }: any) => {
   const route = useRoute();
@@ -20,10 +22,12 @@ const SelectAppointmentDate: React.FC = ({ navigation }: any) => {
     shop: ShopProps;
     service: Service;
   };
+  const { user } = useContext(DatabaseContext);
   const [date, setDate] = useState(new Date());
   const [time, setTime] = useState(new Date());
   const [mode, setMode] = useState<"time" | "date">("date");
   const [show, setShow] = useState(false);
+  const [_, setAppointments] = useState<string[]>([]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -54,6 +58,23 @@ const SelectAppointmentDate: React.FC = ({ navigation }: any) => {
       ),
       headerRightContainerStyle: tailwind("mr-2"),
     });
+
+    async () => {
+      const apts = await db
+        .collection("appointments")
+        .where("userID", "==", user?.uid)
+        .where("status", "==", "ON-GOING")
+        .orderBy("timestamp", "desc")
+        .get();
+
+      const dates: string[] = [];
+      apts.forEach((apt) => {
+        const data = apt.data() as Appointment;
+        dates.push(data.appointmentDate);
+      });
+
+      setAppointments(dates);
+    };
   }, []);
 
   const onChange = (_: any, selectedDate: any) => {

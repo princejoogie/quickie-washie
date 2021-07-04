@@ -163,9 +163,28 @@ const ShopAppointmentItem: React.FC = ({ navigation }: any) => {
           </Text>
         </View>
 
-        <Text style={tailwind("mt-3 text-xs text-gray-600")}>
-          Appointment Date
-        </Text>
+        <View
+          style={tailwind("mt-3 flex flex-row items-center justify-between")}
+        >
+          <Text style={tailwind("text-xs text-gray-600")}>
+            Appointment Date
+          </Text>
+
+          {status === "ON-GOING" && (
+            <TouchableOpacity
+              activeOpacity={0.6}
+              onPress={() => {
+                navigation.navigate("ChangeAptDate", {
+                  appointmentDate,
+                  id,
+                  status,
+                });
+              }}
+            >
+              <Text style={tailwind("text-blue-500 text-xs")}>Edit</Text>
+            </TouchableOpacity>
+          )}
+        </View>
         <View style={[tailwind("bg-white rounded p-2 mt-1"), { ...SHADOW_SM }]}>
           <Text style={tailwind("font-bold")}>
             {formatAppointmentDate(date, date)}

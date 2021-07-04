@@ -206,7 +206,7 @@ const Reports: React.FC = () => {
               stroke: "#9CA3AF",
             },
             fillShadowGradientOpacity: 1,
-            fillShadowGradient: "#059669",
+            fillShadowGradient: "#ccc",
           }}
           data={{
             labels: getDaily(appointments).services.labels,
@@ -226,7 +226,10 @@ const Reports: React.FC = () => {
           Weekly
         </Text>
         <Text style={tailwind("text-gray-600")}>
-          Total Sales: ₱{commaize(lodash.sum(getWeekly(appointments)) * 1000)}
+          Total Sales: ₱
+          {commaize(
+            parseFloat((lodash.sum(getWeekly(appointments)) * 1000).toFixed(2))
+          )}
         </Text>
         <ReportChart
           {...{
@@ -240,7 +243,10 @@ const Reports: React.FC = () => {
           Monthly
         </Text>
         <Text style={tailwind("text-gray-600")}>
-          Total Sales: ₱{commaize(lodash.sum(getMonthly(appointments)) * 1000)}
+          Total Sales: ₱
+          {commaize(
+            parseFloat((lodash.sum(getMonthly(appointments)) * 1000).toFixed(2))
+          )}
         </Text>
         <ReportChart
           {...{

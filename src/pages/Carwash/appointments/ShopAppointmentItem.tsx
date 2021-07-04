@@ -24,7 +24,15 @@ import { Appointment, User } from "../../../types/data-types";
 const ShopAppointmentItem: React.FC = ({ navigation }: any) => {
   const route = useRoute();
   const {
-    appointment: { service, appointmentDate, vehicle: car, id, userID, status },
+    appointment: {
+      service,
+      appointmentDate,
+      vehicle: car,
+      id,
+      userID,
+      status,
+      shopID,
+    },
   } = route.params as { appointment: Appointment };
   const date = new Date(appointmentDate);
   const [userData, setUserData] = useState<User>();
@@ -177,7 +185,10 @@ const ShopAppointmentItem: React.FC = ({ navigation }: any) => {
                 navigation.navigate("ChangeAptDate", {
                   appointmentDate,
                   id,
-                  status,
+                  userID,
+                  shopID,
+                  service,
+                  car,
                 });
               }}
             >

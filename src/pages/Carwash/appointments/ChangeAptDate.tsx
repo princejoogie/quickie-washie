@@ -12,14 +12,25 @@ import tailwind from "tailwind-rn";
 import { Icon } from "react-native-elements";
 import { useRoute } from "@react-navigation/core";
 import { formatAppointmentDate } from "../../../lib/helpers";
-import { db } from "../../../lib/firebase";
+import { db, timestamp } from "../../../lib/firebase";
+import {
+  CarProp,
+  NotificationItem,
+  Service,
+  ShopProps,
+} from "../../../types/data-types";
 
 const ChangeAptDate: React.FC = ({ navigation }: any) => {
   const route = useRoute();
-  const { appointmentDate, id } = route.params as {
-    appointmentDate: string;
-    id: string;
-  };
+  const { appointmentDate, id, userID, shopID, service, car } =
+    route.params as {
+      appointmentDate: string;
+      id: string;
+      userID: string;
+      shopID: string;
+      service: Service;
+      car: CarProp;
+    };
   const [date, setDate] = useState(new Date(appointmentDate));
   const [time, setTime] = useState(new Date(appointmentDate));
   const [mode, setMode] = useState<"time" | "date">("date");
@@ -75,10 +86,32 @@ const ChangeAptDate: React.FC = ({ navigation }: any) => {
         <TouchableOpacity
           onPress={async () => {
             setLoading(() => true);
-            const appointmentDate = getFinalDate().toISOString();
-            await db.collection("appointments").doc(id).update({
-              appointmentDate,
-            });
+            try {
+              const _appointmentDate = getFinalDate().toISOString();
+              await db.collection("appointments").doc(id).update({
+                appointmentDate: _appointmentDate,
+              });
+              const shop = (
+                await db.collection("users").doc(shopID).get()
+              ).data() as ShopProps;
+              await db
+                .collection("users")
+                .doc(userID)
+                .collection("notifications")
+                .add({
+                  title: "Appointment Date Changed",
+                  content: `Service: ${service.name} \nVehicle: ${
+                    car.plateNumber
+                  } \nNew Date: ${formatAppointmentDate(date, time)}`,
+                  timestamp: timestamp(),
+                  opened: false,
+                  photoURL: !!shop.photoURL ? shop.photoURL : "",
+                  shopName: shop.shopName,
+                } as NotificationItem);
+            } catch (err) {
+              console.log(err);
+            }
+
             navigation.popToTop();
           }}
           activeOpacity={0.5}

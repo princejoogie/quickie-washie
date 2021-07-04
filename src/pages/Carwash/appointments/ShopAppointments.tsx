@@ -93,7 +93,7 @@ const Item: React.FC<ItemProp> = ({ apt }) => {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [apt]);
 
   return (
     <TouchableOpacity

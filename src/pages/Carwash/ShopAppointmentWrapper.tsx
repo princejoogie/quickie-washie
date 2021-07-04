@@ -1,6 +1,10 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
-import { ShopAppointmentItem, ShopAppointments } from "./appointments/";
+import {
+  ChangeAptDate,
+  ShopAppointmentItem,
+  ShopAppointments,
+} from "./appointments/";
 
 const Stack = createStackNavigator();
 
@@ -16,6 +20,13 @@ const ShopAppointmentWrapper: React.FC = () => {
         component={ShopAppointmentItem}
         options={{
           headerTitle: "Appointment Item",
+        }}
+      />
+      <Stack.Screen
+        name="ChangeAptDate"
+        component={ChangeAptDate}
+        options={{
+          headerTitle: "Change Date and Time",
         }}
       />
     </Stack.Navigator>

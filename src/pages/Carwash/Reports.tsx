@@ -101,10 +101,12 @@ const getWeekly = (appointments: Appointment[]): number[] => {
   return data;
 };
 
-const getMonthly = (appointments: Appointment[]): number[] => {
+const getYearly = (appointments: Appointment[]): number[] => {
+  const baseYear = new Date().getFullYear();
   const start = new Date();
   start.setHours(0, 0, 0, 0);
   start.setMonth(0);
+  start.setFullYear(start.getFullYear() - 4);
 
   const end = new Date();
   end.setHours(0, 0, 0, 0);
@@ -120,14 +122,15 @@ const getMonthly = (appointments: Appointment[]): number[] => {
     }
   });
 
-  const data = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  const data = [0, 0, 0, 0, 0];
 
   filtered.forEach((apt) => {
-    const _month = apt.date?.getMonth()!;
-    data[_month] += parseFloat(apt.totalPrice) / 1000;
+    const _year = apt.date?.getFullYear()!;
+    const i = baseYear + (baseYear - _year) - baseYear;
+    data[i] += parseFloat(apt.totalPrice) / 1000;
   });
 
-  return data;
+  return lodash.reverse(data);
 };
 
 const Reports: React.FC = () => {
@@ -240,34 +243,27 @@ const Reports: React.FC = () => {
         />
 
         <Text style={tailwind("text-xl font-bold text-black mt-4")}>
-          Monthly
+          Yearly
         </Text>
         <Text style={tailwind("text-gray-600")}>
           Total Sales: ₱
           {commaize(
-            parseFloat((lodash.sum(getMonthly(appointments)) * 1000).toFixed(2))
+            parseFloat((lodash.sum(getYearly(appointments)) * 1000).toFixed(2))
           )}
         </Text>
         <ReportChart
           {...{
             className: "mt-2",
-            labels: [
-              "Jan",
-              "Feb",
-              "Mar",
-              "Apr",
-              "May",
-              "Jun",
-              "Jul",
-              "Aug",
-              "Sep",
-              "Oct",
-              "Nov",
-              "Dec",
-            ],
-            data: getMonthly(appointments),
+            labels: Array(5)
+              .fill(0)
+              .map((_, i) => {
+                const date = new Date();
+                const year = date.getFullYear() - (5 - (i + 1));
+
+                return `${year}`;
+              }),
+            data: getYearly(appointments),
             decimals: 2,
-            rotateX: 45,
           }}
         />
       </View>

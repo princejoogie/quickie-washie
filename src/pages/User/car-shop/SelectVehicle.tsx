@@ -13,7 +13,12 @@ import tailwind from "tailwind-rn";
 import { SHADOW_SM } from "../../../constants";
 import { DatabaseContext } from "../../../contexts/DatabaseContext";
 import { db } from "../../../lib/firebase";
-import { CarProp, Service, ShopProps } from "../../../types/data-types";
+import {
+  Appointment,
+  CarProp,
+  Service,
+  ShopProps,
+} from "../../../types/data-types";
 
 interface SelectVehicleProps {}
 
@@ -28,7 +33,25 @@ const SelectVehicle: React.FC<SelectVehicleProps> = ({ navigation }: any) => {
   const [selectedCar, setSelectedCar] = useState("");
   const [noCars, setNoCars] = useState(false);
   const { user } = useContext(DatabaseContext);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [allowed, setAllowed] = useState(false);
+
+  useEffect(() => {
+    if (appointments.length > 0) {
+      let hasSame = false;
+      appointments.forEach((apt) => {
+        if (
+          selectedCar === apt.vehicle.id &&
+          appointmentDate === apt.appointmentDate &&
+          service.id === apt.service.id
+        ) {
+          hasSame = true;
+        }
+      });
+      setAllowed(() => !hasSame);
+    }
+  }, [appointments, selectedCar]);
 
   useEffect(() => {
     const listener = db
@@ -48,6 +71,23 @@ const SelectVehicle: React.FC<SelectVehicleProps> = ({ navigation }: any) => {
           );
         }
       });
+
+    (async () => {
+      const apts = await db
+        .collection("appointments")
+        .where("userID", "==", user?.uid)
+        .where("status", "==", "ON-GOING")
+        .orderBy("timestamp", "desc")
+        .get();
+
+      const datas: Appointment[] = [];
+      apts.forEach((apt) => {
+        const data = apt.data() as Appointment;
+        datas.push(data);
+      });
+
+      setAppointments(datas);
+    })();
 
     navigation.setOptions({
       headerRight: () => (
@@ -91,8 +131,13 @@ const SelectVehicle: React.FC<SelectVehicleProps> = ({ navigation }: any) => {
     <View style={tailwind("flex flex-1")}>
       {!loading && (
         <View style={tailwind("absolute z-50 bottom-2 inset-x-2")}>
+          {!allowed && (
+            <Text style={tailwind("text-yellow-600 text-xs text-center")}>
+              Car already has this Service and Appointment Date
+            </Text>
+          )}
           <TouchableOpacity
-            disabled={!selectedCar}
+            disabled={!selectedCar || !allowed}
             onPress={() => {
               const car = cars.find((e) => e.id === selectedCar);
               navigation.navigate("AppointmentSummary", {
@@ -104,8 +149,8 @@ const SelectVehicle: React.FC<SelectVehicleProps> = ({ navigation }: any) => {
             }}
             activeOpacity={0.5}
             style={tailwind(
-              `flex mt-2 flex-row p-2 rounded items-center justify-center ${
-                !selectedCar ? "bg-gray-300" : "bg-green-500"
+              `flex mt-2 flex-row bg-green-500 p-2 rounded items-center justify-center ${
+                !selectedCar || !allowed ? "opacity-30" : "opacity-100"
               }`
             )}
           >

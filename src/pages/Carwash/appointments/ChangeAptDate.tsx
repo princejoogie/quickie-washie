@@ -19,6 +19,8 @@ import {
   Service,
   ShopProps,
 } from "../../../types/data-types";
+import { TextInput } from "react-native";
+import { SHADOW_SM } from "../../../constants";
 
 const ChangeAptDate: React.FC = ({ navigation }: any) => {
   const route = useRoute();
@@ -37,6 +39,7 @@ const ChangeAptDate: React.FC = ({ navigation }: any) => {
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const [allowed, setAllowed] = useState(false);
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     console.log("-----------------");
@@ -85,7 +88,17 @@ const ChangeAptDate: React.FC = ({ navigation }: any) => {
   return (
     <View style={tailwind("flex flex-1")}>
       <View style={tailwind("absolute z-50 bottom-2 inset-x-2")}>
-        <View style={tailwind("mt-4")}>
+        <Text style={tailwind("text-xs text-gray-600")}>Reason (optional)</Text>
+        <TextInput
+          multiline
+          numberOfLines={5}
+          value={message}
+          onChangeText={setMessage}
+          placeholder="Slot Not Available"
+          textAlignVertical="top"
+          style={[tailwind("mt-1 bg-white p-2 h-20 rounded"), { ...SHADOW_SM }]}
+        />
+        <View style={tailwind("mt-2")}>
           <Text style={tailwind("text-xs text-center text-gray-600")}>
             Selected Appointment Date and Time:
           </Text>
@@ -122,7 +135,9 @@ const ChangeAptDate: React.FC = ({ navigation }: any) => {
                   title: "Appointment Date Changed",
                   content: `Service: ${service.name} \nVehicle: ${
                     car.plateNumber
-                  } \nNew Date: ${formatAppointmentDate(date, time)}`,
+                  } \nNew Date: ${formatAppointmentDate(date, time)}${
+                    !!message ? `\nReason: ${message}` : ""
+                  }`,
                   timestamp: timestamp(),
                   opened: false,
                   photoURL: !!shop.photoURL ? shop.photoURL : "",

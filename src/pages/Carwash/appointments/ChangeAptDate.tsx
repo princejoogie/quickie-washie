@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -36,6 +36,19 @@ const ChangeAptDate: React.FC = ({ navigation }: any) => {
   const [mode, setMode] = useState<"time" | "date">("date");
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [allowed, setAllowed] = useState(false);
+
+  useEffect(() => {
+    console.log("-----------------");
+    console.log(`hour = ${time.getHours()}`);
+    console.log(`mins = ${time.getMinutes()}`);
+    console.log(`secs = ${time.getSeconds()}`);
+    console.log(`allowed = ${allowed}`);
+
+    if (time.getHours() < 6 || time.getHours() > 18) {
+      setAllowed(() => false);
+    } else setAllowed(() => true);
+  }, [time]);
 
   const onChange = (_: any, selectedDate: any) => {
     const currentDate = selectedDate || date;
@@ -83,7 +96,14 @@ const ChangeAptDate: React.FC = ({ navigation }: any) => {
           </Text>
         </View>
 
+        {!allowed && (
+          <Text style={tailwind("text-xs text-red-500 text-center mt-2")}>
+            Open only from 6am to 6pm
+          </Text>
+        )}
+
         <TouchableOpacity
+          disabled={!allowed}
           onPress={async () => {
             setLoading(() => true);
             try {
@@ -116,7 +136,9 @@ const ChangeAptDate: React.FC = ({ navigation }: any) => {
           }}
           activeOpacity={0.5}
           style={tailwind(
-            "flex mt-2 flex-row p-2 bg-green-500 rounded items-center justify-center"
+            `flex mt-1 flex-row p-2 bg-green-500 rounded items-center justify-center ${
+              !allowed ? "opacity-30" : "opacity-100"
+            }`
           )}
         >
           {loading ? (

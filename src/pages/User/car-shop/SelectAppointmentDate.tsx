@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -11,10 +11,8 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import tailwind from "tailwind-rn";
 import { Icon } from "react-native-elements";
 import { useRoute } from "@react-navigation/core";
-import { Appointment, Service, ShopProps } from "../../../types/data-types";
+import { Service, ShopProps } from "../../../types/data-types";
 import { formatAppointmentDate } from "../../../lib/helpers";
-import { db } from "../../../lib/firebase";
-import { DatabaseContext } from "../../../contexts/DatabaseContext";
 
 const SelectAppointmentDate: React.FC = ({ navigation }: any) => {
   const route = useRoute();
@@ -22,12 +20,11 @@ const SelectAppointmentDate: React.FC = ({ navigation }: any) => {
     shop: ShopProps;
     service: Service;
   };
-  const { user } = useContext(DatabaseContext);
   const [date, setDate] = useState(new Date());
   const [time, setTime] = useState(new Date());
   const [mode, setMode] = useState<"time" | "date">("date");
   const [show, setShow] = useState(false);
-  const [_, setAppointments] = useState<string[]>([]);
+  const [allowed, setAllowed] = useState(false);
 
   useEffect(() => {
     navigation.setOptions({
@@ -58,24 +55,13 @@ const SelectAppointmentDate: React.FC = ({ navigation }: any) => {
       ),
       headerRightContainerStyle: tailwind("mr-2"),
     });
-
-    async () => {
-      const apts = await db
-        .collection("appointments")
-        .where("userID", "==", user?.uid)
-        .where("status", "==", "ON-GOING")
-        .orderBy("timestamp", "desc")
-        .get();
-
-      const dates: string[] = [];
-      apts.forEach((apt) => {
-        const data = apt.data() as Appointment;
-        dates.push(data.appointmentDate);
-      });
-
-      setAppointments(dates);
-    };
   }, []);
+
+  useEffect(() => {
+    if (time.getHours() < 6 || time.getHours() > 18) {
+      setAllowed(() => false);
+    } else setAllowed(() => true);
+  }, [time]);
 
   const onChange = (_: any, selectedDate: any) => {
     const currentDate = selectedDate || date;
@@ -123,7 +109,14 @@ const SelectAppointmentDate: React.FC = ({ navigation }: any) => {
           </Text>
         </View>
 
+        {!allowed && (
+          <Text style={tailwind("text-xs text-red-500 text-center mt-2")}>
+            Open only from 6am to 6pm
+          </Text>
+        )}
+
         <TouchableOpacity
+          disabled={!allowed}
           onPress={() => {
             const appointmentDate = getFinalDate().toISOString();
             navigation.navigate("SelectVehicle", {
@@ -134,7 +127,9 @@ const SelectAppointmentDate: React.FC = ({ navigation }: any) => {
           }}
           activeOpacity={0.5}
           style={tailwind(
-            "flex mt-2 flex-row p-2 bg-green-500 rounded items-center justify-center"
+            `flex mt-1 flex-row p-2 bg-green-500 rounded items-center justify-center ${
+              !allowed ? "opacity-30" : "opacity-100"
+            }`
           )}
         >
           <Text style={tailwind("text-white rounded")}>Choose a Vehicle</Text>
